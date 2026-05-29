@@ -1,0 +1,35 @@
+name: AccessibilityMapper
+options:
+  bundleIdPrefix: com.openbcm
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: false
+  xcodeVersion: "15.0"
+
+targets:
+  AccessibilityMapper:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: Sources/AccessibilityMapper
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.openbcm.AccessibilityMapper
+        SWIFT_VERSION: 5.9
+        MACOSX_DEPLOYMENT_TARGET: "13.0"
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_HARDENED_RUNTIME: YES
+    info:
+      path: Sources/AccessibilityMapper/Info.plist
+      properties:
+        CFBundleDisplayName: Accessibility Mapper
+        NSHighResolutionCapable: true
+        LSMinimumSystemVersion: "13.0"
+        NSPrincipalClass: NSApplication
+    entitlements:
+      path: Sources/AccessibilityMapper/AccessibilityMapper.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.files.user-selected.read-write: true
