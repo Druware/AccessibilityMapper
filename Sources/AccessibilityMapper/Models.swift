@@ -7,6 +7,9 @@
 
 import Foundation
 import CoreLocation
+import MapKit
+import SwiftUI
+import UniformTypeIdentifiers
 
 struct BullseyeMarker: Codable, Identifiable, Equatable {
     var id: UUID = UUID()
@@ -37,4 +40,69 @@ struct MapDocument: Codable {
     var spanLonDelta:    Double = 0.15
     var mapTypeRaw:      Int    = 0    // 0=standard 1=satellite 2=hybrid
     var markers: [BullseyeMarker] = []
+
+    var mkMapType: MKMapType {
+        switch mapTypeRaw {
+        case 1: return .satellite
+        case 2: return .hybrid
+        default: return .standard
+        }
+    }
+
+    var region: MKCoordinateRegion {
+        MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: centerLatitude, longitude: centerLongitude),
+            span: MKCoordinateSpan(latitudeDelta: spanLatDelta, longitudeDelta: spanLonDelta)
+        )
+    }
+
+    // Region that fits all markers with their outermost ring visible, plus a 15% margin.
+    // Returns nil when there are no markers.
+    var fitRegion: MKCoordinateRegion? {
+        guard !markers.isEmpty else { return nil }
+
+        let minLat = markers.map(\.latitude).min()!
+        let maxLat = markers.map(\.latitude).max()!
+        let minLon = markers.map(\.longitude).min()!
+        let maxLon = markers.map(\.longitude).max()!
+
+        let centerLat = (minLat + maxLat) / 2
+        let centerLon = (minLon + maxLon) / 2
+
+        // Convert the outer ring radius to degrees for padding
+        let metersPerDegreeLat = 111_320.0
+        let metersPerDegreeLon = 111_320.0 * cos(centerLat * .pi / 180)
+        let latPad = BullseyeMarker.Radii.outer / metersPerDegreeLat
+        let lonPad = BullseyeMarker.Radii.outer / metersPerDegreeLon
+
+        let spanLat = ((maxLat - minLat) + 2 * latPad) * 1.15
+        let spanLon = ((maxLon - minLon) + 2 * lonPad) * 1.15
+
+        return MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: centerLat, longitude: centerLon),
+            span: MKCoordinateSpan(latitudeDelta: spanLat, longitudeDelta: spanLon)
+        )
+    }
+}
+
+extension UTType {
+    static let accmap = UTType(exportedAs: "com.openbcm.accmap")
+}
+
+extension MapDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.accmap] }
+
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        self = try JSONDecoder().decode(MapDocument.self, from: data)
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let data = try encoder.encode(self)
+        return FileWrapper(regularFileWithContents: data)
+    }
 }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ToolboxView: View {
+    @Binding var document: MapDocument
     @ObservedObject var viewModel: MapViewModel
 
     var body: some View {
@@ -58,7 +59,7 @@ struct ToolboxView: View {
             HStack {
                 sectionHeader("MARKERS")
                 Spacer()
-                Text("\(viewModel.markers.count)")
+                Text("\(document.markers.count)")
                     .font(.system(size: 10, weight: .semibold))
                     .foregroundColor(.secondary)
                     .padding(.horizontal, 6).padding(.vertical, 2)
@@ -67,7 +68,7 @@ struct ToolboxView: View {
                     .padding(.trailing, 12)
             }
 
-            if viewModel.markers.isEmpty {
+            if document.markers.isEmpty {
                 Text("No markers yet.\nSelect Accessible Location, then\nclick anywhere on the map.")
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -77,12 +78,22 @@ struct ToolboxView: View {
             } else {
                 ScrollView {
                     LazyVStack(spacing: 3) {
-                        ForEach(viewModel.markers) { marker in
-                            MarkerRow(marker: marker) {
-                                viewModel.removeMarker(id: marker.id)
-                            } onRename: { newLabel in
-                                viewModel.renameMarker(id: marker.id, label: newLabel)
-                            }
+                        ForEach(document.markers) { marker in
+                            MarkerRow(
+                                marker: marker,
+                                isSelected: viewModel.selectedMarkerID == marker.id,
+                                onDelete: {
+                                    if viewModel.selectedMarkerID == marker.id { viewModel.selectedMarkerID = nil }
+                                    document.markers.removeAll { $0.id == marker.id }
+                                },
+                                onRename: { newLabel in
+                                    if let i = document.markers.firstIndex(where: { $0.id == marker.id }) {
+                                        document.markers[i].label = newLabel
+                                    }
+                                },
+                                onSelect: { viewModel.selectedMarkerID = marker.id },
+                                onCenter: { viewModel.centerOn(marker: marker) }
+                            )
                         }
                     }
                     .padding(.horizontal, 8)
@@ -185,22 +196,33 @@ struct LegendRow: View {
 
 struct MarkerRow: View {
     let marker: BullseyeMarker
+    let isSelected: Bool
     let onDelete: () -> Void
     let onRename: (String) -> Void
+    let onSelect: () -> Void
+    let onCenter: () -> Void
 
     @State private var label: String
 
-    init(marker: BullseyeMarker, onDelete: @escaping () -> Void, onRename: @escaping (String) -> Void) {
+    init(marker: BullseyeMarker,
+         isSelected: Bool,
+         onDelete: @escaping () -> Void,
+         onRename: @escaping (String) -> Void,
+         onSelect: @escaping () -> Void,
+         onCenter: @escaping () -> Void) {
         self.marker = marker
+        self.isSelected = isSelected
         self.onDelete = onDelete
         self.onRename = onRename
+        self.onSelect = onSelect
+        self.onCenter = onCenter
         self._label = State(initialValue: marker.label)
     }
 
     var body: some View {
         HStack(spacing: 6) {
             Image(systemName: "scope")
-                .foregroundColor(.red)
+                .foregroundColor(isSelected ? .accentColor : .red)
                 .frame(width: 14)
 
             VStack(alignment: .leading, spacing: 2) {
@@ -227,7 +249,9 @@ struct MarkerRow: View {
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 5)
-        .background(Color.secondary.opacity(0.07))
+        .background(isSelected ? Color.accentColor.opacity(0.15) : Color.secondary.opacity(0.07))
         .cornerRadius(5)
+        .onTapGesture(count: 2) { onCenter() }
+        .onTapGesture(count: 1) { onSelect() }
     }
 }

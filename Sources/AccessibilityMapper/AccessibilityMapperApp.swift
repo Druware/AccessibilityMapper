@@ -10,23 +10,28 @@ import SwiftUI
 @main
 struct AccessibilityMapperApp: App {
     var body: some Scene {
-        WindowGroup("Accessibility Mapper") {
-            ContentView()
+        DocumentGroup(newDocument: MapDocument()) { file in
+            ContentView(document: file.$document)
                 .frame(minWidth: 900, minHeight: 600)
         }
-        .commands {
-            CommandGroup(replacing: .newItem) {}
-            CommandGroup(after: .saveItem) {
-                Button("Open Map…") { NotificationCenter.default.post(name: .openMap, object: nil) }
-                    .keyboardShortcut("o", modifiers: .command)
-                Button("Save Map…") { NotificationCenter.default.post(name: .saveMap, object: nil) }
-                    .keyboardShortcut("s", modifiers: .command)
-            }
+        .commands { AppCommands() }
+
+        Window("About Accessibility Mapper", id: "about") {
+            AboutView()
         }
+        .windowResizability(.contentSize)
+        .defaultPosition(.center)
     }
 }
 
-extension Notification.Name {
-    static let saveMap = Notification.Name("saveMap")
-    static let openMap = Notification.Name("openMap")
+private struct AppCommands: Commands {
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some Commands {
+        CommandGroup(replacing: .appInfo) {
+            Button("About Accessibility Mapper") {
+                openWindow(id: "about")
+            }
+        }
+    }
 }

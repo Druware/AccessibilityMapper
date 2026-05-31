@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3FED73A942A7EC1335A087CA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9AE74F2AB339CF0A5C22B /* ContentView.swift */; };
+		436985EF2FCC906600BB2433 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436985EE2FCC906600BB2433 /* AboutView.swift */; };
+		43F1D07F2FCC870C004AFE80 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 430A4A702FC0F26B009D85DE /* Assets.xcassets */; };
 		6FD82B0BB44E1BB3F42126FB /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AD19E06DAE8DA30F2D18CD /* Models.swift */; };
 		9A7F14DC30C5D03FA24ACED0 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97CC1F8FA40F8A0075C973F1 /* MapView.swift */; };
 		A26C555E408A3EE8DC8E0671 /* AccessibilityMapperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC97FEBF5EB24E72475FA75D /* AccessibilityMapperApp.swift */; };
@@ -18,9 +20,12 @@
 /* Begin PBXFileReference section */
 		280D7BDA69BEE0FA1A6965F5 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		430A4A702FC0F26B009D85DE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		436985EE2FCC906600BB2433 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		4393D0C92FCA4EE70041C86E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		4393D0CA2FCA4EE70041C86E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4393D0CB2FCA4FAE0041C86E /* COPYRIGHT */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPYRIGHT; sourceTree = "<group>"; };
+		43F1D0802FCC87A4004AFE80 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		43F1D0812FCC87C1004AFE80 /* CHANGE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGE.md; sourceTree = "<group>"; };
 		4D5BE00AF816A94E842373A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		52AD19E06DAE8DA30F2D18CD /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		7812ACDB466069A6433EC347 /* AccessibilityMapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AccessibilityMapper.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,6 +48,8 @@
 		8613BBC7CB1D063F8A8F023E = {
 			isa = PBXGroup;
 			children = (
+				43F1D0812FCC87C1004AFE80 /* CHANGE.md */,
+				43F1D0802FCC87A4004AFE80 /* TODO.md */,
 				4393D0CB2FCA4FAE0041C86E /* COPYRIGHT */,
 				4393D0C92FCA4EE70041C86E /* LICENSE */,
 				4393D0CA2FCA4EE70041C86E /* README.md */,
@@ -54,6 +61,7 @@
 		B59318A84C710677F29C21F6 /* AccessibilityMapper */ = {
 			isa = PBXGroup;
 			children = (
+				436985EE2FCC906600BB2433 /* AboutView.swift */,
 				430A4A702FC0F26B009D85DE /* Assets.xcassets */,
 				9005C8D589D2FEDA99813A07 /* AccessibilityMapper.entitlements */,
 				DC97FEBF5EB24E72475FA75D /* AccessibilityMapperApp.swift */,
@@ -76,6 +84,7 @@
 			buildConfigurationList = CEF088D4B94A4E52E7E3E6EC /* Build configuration list for PBXNativeTarget "AccessibilityMapper" */;
 			buildPhases = (
 				8E0E63A8D41A83726964D8FC /* Sources */,
+				43F1D07E2FCC8700004AFE80 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -95,7 +104,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1500;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					34224627C5E70773307B514B = {
 						ProvisioningStyle = Automatic;
@@ -121,12 +130,24 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		43F1D07E2FCC8700004AFE80 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				43F1D07F2FCC870C004AFE80 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		8E0E63A8D41A83726964D8FC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				A26C555E408A3EE8DC8E0671 /* AccessibilityMapperApp.swift in Sources */,
+				436985EF2FCC906600BB2433 /* AboutView.swift in Sources */,
 				3FED73A942A7EC1335A087CA /* ContentView.swift in Sources */,
 				9A7F14DC30C5D03FA24ACED0 /* MapView.swift in Sources */,
 				E892541121050E6EDD7981AE /* MapViewModel.swift in Sources */,
@@ -142,17 +163,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Sources/AccessibilityMapper/AccessibilityMapper.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 42;
+				DEAD_CODE_STRIPPING = YES;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Sources/AccessibilityMapper/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AccessibilityMapper;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.openbcm.AccessibilityMapper;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
@@ -193,9 +220,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -209,6 +238,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
@@ -249,9 +279,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -272,6 +304,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -282,17 +315,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = Sources/AccessibilityMapper/AccessibilityMapper.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 42;
+				DEAD_CODE_STRIPPING = YES;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Sources/AccessibilityMapper/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AccessibilityMapper;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.openbcm.AccessibilityMapper;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
