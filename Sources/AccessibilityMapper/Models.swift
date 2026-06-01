@@ -11,6 +11,29 @@ import MapKit
 import SwiftUI
 import UniformTypeIdentifiers
 
+// MARK: - Boundary
+
+enum BoundaryType: String, Codable, CaseIterable {
+    case city, county, state
+    var displayName: String {
+        switch self {
+        case .city:   return "City"
+        case .county: return "County/Parish"
+        case .state:  return "State"
+        }
+    }
+}
+
+struct BoundaryRecord: Codable, Identifiable {
+    var id: UUID = UUID()
+    var name: String
+    var type: BoundaryType
+    // Each element is one polygon ring: array of [longitude, latitude] pairs
+    var polygonRings: [[[Double]]]
+}
+
+// MARK: - Marker
+
 struct BullseyeMarker: Codable, Identifiable, Equatable {
     var id: UUID = UUID()
     var latitude: Double
@@ -40,6 +63,28 @@ struct MapDocument: Codable {
     var spanLonDelta:    Double = 0.15
     var mapTypeRaw:      Int    = 0    // 0=standard 1=satellite 2=hybrid
     var markers: [BullseyeMarker] = []
+    var boundaries: [BoundaryRecord] = []
+
+    // Explicit CodingKeys so the custom init(from:) can decode older files
+    // that are missing newer fields, falling back to each property's default value.
+    private enum CodingKeys: String, CodingKey {
+        case zipCode, centerLatitude, centerLongitude, spanLatDelta, spanLonDelta,
+             mapTypeRaw, markers, boundaries
+    }
+
+    init() {}
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        zipCode         = try c.decodeIfPresent(String.self,           forKey: .zipCode)         ?? ""
+        centerLatitude  = try c.decodeIfPresent(Double.self,           forKey: .centerLatitude)  ?? 37.3318
+        centerLongitude = try c.decodeIfPresent(Double.self,           forKey: .centerLongitude) ?? -122.0312
+        spanLatDelta    = try c.decodeIfPresent(Double.self,           forKey: .spanLatDelta)    ?? 0.15
+        spanLonDelta    = try c.decodeIfPresent(Double.self,           forKey: .spanLonDelta)    ?? 0.15
+        mapTypeRaw      = try c.decodeIfPresent(Int.self,              forKey: .mapTypeRaw)      ?? 0
+        markers         = try c.decodeIfPresent([BullseyeMarker].self, forKey: .markers)         ?? []
+        boundaries      = try c.decodeIfPresent([BoundaryRecord].self, forKey: .boundaries)      ?? []
+    }
 
     var mkMapType: MKMapType {
         switch mapTypeRaw {

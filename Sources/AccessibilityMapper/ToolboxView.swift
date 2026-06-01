@@ -11,6 +11,9 @@ struct ToolboxView: View {
     @Binding var document: MapDocument
     @ObservedObject var viewModel: MapViewModel
 
+    @State private var boundaryQuery = ""
+    @State private var boundaryType: BoundaryType = .city
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
 
@@ -46,12 +49,55 @@ struct ToolboxView: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 LegendRow(color: .red,    label: "Walk         —  0.5 mi", isEnabled: $viewModel.showWalk)
-                LegendRow(color: .green,  label: "Safe Routes  —  1.0 mi", isEnabled: $viewModel.showSafeRoutes)
+                LegendRow(color: Color(red: 0.0, green: 0.48, blue: 0.15), label: "Safe Routes  —  1.0 mi", isEnabled: $viewModel.showSafeRoutes)
                 LegendRow(color: .orange, label: "Bike         —  2.0 mi", isEnabled: $viewModel.showBike)
                 LegendRow(color: .blue,   label: "LSV          —  3.0 mi", isEnabled: $viewModel.showLSV)
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 10)
+
+            Divider()
+
+            // ── Boundaries ────────────────────────────────────────────
+            sectionHeader("BOUNDARIES")
+
+            HStack(spacing: 6) {
+                Picker("", selection: $boundaryType) {
+                    ForEach(BoundaryType.allCases, id: \.self) { t in
+                        Text(t.displayName).tag(t)
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 108)
+
+                TextField("Search…", text: $boundaryQuery)
+                    .textFieldStyle(.roundedBorder)
+                    .font(.system(size: 12))
+                    .onSubmit { searchBoundary() }
+
+                Button(action: searchBoundary) {
+                    if viewModel.isFetchingBoundary {
+                        ProgressView().controlSize(.mini).frame(width: 14, height: 14)
+                    } else {
+                        Image(systemName: "magnifyingglass")
+                    }
+                }
+                .disabled(boundaryQuery.isEmpty || viewModel.isFetchingBoundary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 4)
+
+            if !document.boundaries.isEmpty {
+                VStack(spacing: 3) {
+                    ForEach(document.boundaries) { b in
+                        BoundaryRow(boundary: b) {
+                            document.boundaries.removeAll { $0.id == b.id }
+                        }
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.bottom, 8)
+            }
 
             Divider()
 
@@ -121,6 +167,17 @@ struct ToolboxView: View {
         }
     }
 
+    private func searchBoundary() {
+        let q = boundaryQuery.trimmingCharacters(in: .whitespaces)
+        guard !q.isEmpty else { return }
+        Task {
+            if let record = await viewModel.fetchBoundary(query: q, type: boundaryType) {
+                document.boundaries.append(record)
+                boundaryQuery = ""
+            }
+        }
+    }
+
     @ViewBuilder
     private func sectionHeader(_ text: String) -> some View {
         Text(text)
@@ -133,6 +190,33 @@ struct ToolboxView: View {
 }
 
 // MARK: - Sub-views
+
+struct BoundaryRow: View {
+    let boundary: BoundaryRecord
+    let onDelete: () -> Void
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "map")
+                .foregroundColor(.purple)
+                .frame(width: 14)
+            Text(boundary.name)
+                .font(.system(size: 11))
+                .lineLimit(2)
+                .foregroundColor(.primary)
+            Spacer()
+            Button(action: onDelete) {
+                Image(systemName: "minus.circle.fill")
+                    .foregroundColor(.red.opacity(0.7))
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(Color.purple.opacity(0.08))
+        .cornerRadius(5)
+    }
+}
 
 struct ToolRow: View {
     let icon: String

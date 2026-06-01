@@ -14,8 +14,9 @@
 * make all on map bullseyes to be less prominent
 * emphasize the bullseyes of the selected marker
 * On load, ensure that the markers are displayed in the current mapview
-
-
+* enable support for showing the city/county/parrish limits on a map ( optional )
+* add labels to the markers on the mapview
+* add a document specific icon
 
 ### 05-22
 

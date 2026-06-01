@@ -44,6 +44,8 @@
 					<string>accmap</string>
 				</array>
 			</dict>
+			<key>UTTypeIconFile</key>
+			<string>docicon</string>
 		</dict>
 	</array>
 	<key>CFBundleDocumentTypes</key>
@@ -57,6 +59,8 @@
 			<array>
 				<string>com.openbcm.accmap</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>docicon</string>
 		</dict>
 	</array>
 </dict>
