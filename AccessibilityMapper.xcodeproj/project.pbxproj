@@ -10,6 +10,9 @@
 		3FED73A942A7EC1335A087CA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F9AE74F2AB339CF0A5C22B /* ContentView.swift */; };
 		436985EF2FCC906600BB2433 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 436985EE2FCC906600BB2433 /* AboutView.swift */; };
 		43F1D07F2FCC870C004AFE80 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 430A4A702FC0F26B009D85DE /* Assets.xcassets */; };
+		43F885BD2FCE2D9A00E5A4F0 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 43F885BC2FCE2D9A00E5A4F0 /* PrivacyInfo.xcprivacy */; };
+		43F885BF2FCE38B200E5A4F0 /* ScriptCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F885BE2FCE38B200E5A4F0 /* ScriptCommands.swift */; };
+		43F885C12FCE399F00E5A4F0 /* AccessibilityMapper.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 43F885C02FCE399F00E5A4F0 /* AccessibilityMapper.sdef */; };
 		6FD82B0BB44E1BB3F42126FB /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52AD19E06DAE8DA30F2D18CD /* Models.swift */; };
 		9A7F14DC30C5D03FA24ACED0 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97CC1F8FA40F8A0075C973F1 /* MapView.swift */; };
 		A26C555E408A3EE8DC8E0671 /* AccessibilityMapperApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC97FEBF5EB24E72475FA75D /* AccessibilityMapperApp.swift */; };
@@ -23,9 +26,12 @@
 		436985EE2FCC906600BB2433 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		4393D0C92FCA4EE70041C86E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		4393D0CA2FCA4EE70041C86E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		4393D0CB2FCA4FAE0041C86E /* COPYRIGHT */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = COPYRIGHT; sourceTree = "<group>"; };
 		43F1D0802FCC87A4004AFE80 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		43F1D0812FCC87C1004AFE80 /* CHANGE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGE.md; sourceTree = "<group>"; };
+		43F885BB2FCE2D8900E5A4F0 /* LICENSE-COMMERCIAL */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LICENSE-COMMERCIAL"; sourceTree = "<group>"; };
+		43F885BC2FCE2D9A00E5A4F0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		43F885BE2FCE38B200E5A4F0 /* ScriptCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptCommands.swift; sourceTree = "<group>"; };
+		43F885C02FCE399F00E5A4F0 /* AccessibilityMapper.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = AccessibilityMapper.sdef; sourceTree = "<group>"; };
 		4D5BE00AF816A94E842373A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		52AD19E06DAE8DA30F2D18CD /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		7812ACDB466069A6433EC347 /* AccessibilityMapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AccessibilityMapper.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -48,9 +54,9 @@
 		8613BBC7CB1D063F8A8F023E = {
 			isa = PBXGroup;
 			children = (
+				43F885BB2FCE2D8900E5A4F0 /* LICENSE-COMMERCIAL */,
 				43F1D0812FCC87C1004AFE80 /* CHANGE.md */,
 				43F1D0802FCC87A4004AFE80 /* TODO.md */,
-				4393D0CB2FCA4FAE0041C86E /* COPYRIGHT */,
 				4393D0C92FCA4EE70041C86E /* LICENSE */,
 				4393D0CA2FCA4EE70041C86E /* README.md */,
 				B59318A84C710677F29C21F6 /* AccessibilityMapper */,
@@ -61,6 +67,9 @@
 		B59318A84C710677F29C21F6 /* AccessibilityMapper */ = {
 			isa = PBXGroup;
 			children = (
+				43F885C02FCE399F00E5A4F0 /* AccessibilityMapper.sdef */,
+				43F885BE2FCE38B200E5A4F0 /* ScriptCommands.swift */,
+				43F885BC2FCE2D9A00E5A4F0 /* PrivacyInfo.xcprivacy */,
 				436985EE2FCC906600BB2433 /* AboutView.swift */,
 				430A4A702FC0F26B009D85DE /* Assets.xcassets */,
 				9005C8D589D2FEDA99813A07 /* AccessibilityMapper.entitlements */,
@@ -135,7 +144,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43F885BD2FCE2D9A00E5A4F0 /* PrivacyInfo.xcprivacy in Resources */,
 				43F1D07F2FCC870C004AFE80 /* Assets.xcassets in Resources */,
+				43F885C12FCE399F00E5A4F0 /* AccessibilityMapper.sdef in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +163,7 @@
 				9A7F14DC30C5D03FA24ACED0 /* MapView.swift in Sources */,
 				E892541121050E6EDD7981AE /* MapViewModel.swift in Sources */,
 				6FD82B0BB44E1BB3F42126FB /* Models.swift in Sources */,
+				43F885BF2FCE38B200E5A4F0 /* ScriptCommands.swift in Sources */,
 				AC7C99E002A3763A3C015F4B /* ToolboxView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -164,11 +176,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CLANG_USE_OPTIMIZATION_PROFILE = YES;
 				CODE_SIGN_ENTITLEMENTS = Sources/AccessibilityMapper/AccessibilityMapper.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 42;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = Z44257Z59V;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Sources/AccessibilityMapper/Info.plist;
@@ -180,7 +195,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.openbcm.AccessibilityMapper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.druware.AccessibilityMapper;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
 			};
@@ -316,11 +331,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CLANG_USE_OPTIMIZATION_PROFILE = YES;
 				CODE_SIGN_ENTITLEMENTS = Sources/AccessibilityMapper/AccessibilityMapper.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 42;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = Z44257Z59V;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = Sources/AccessibilityMapper/Info.plist;
@@ -332,7 +350,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.openbcm.AccessibilityMapper;
+				PRODUCT_BUNDLE_IDENTIFIER = com.druware.AccessibilityMapper;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
 			};
