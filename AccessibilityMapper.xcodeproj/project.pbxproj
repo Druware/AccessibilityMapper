@@ -23,6 +23,7 @@
 /* Begin PBXFileReference section */
 		280D7BDA69BEE0FA1A6965F5 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		430A4A702FC0F26B009D85DE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4338C74E301A5C030040C70D /* AccessibilityMapper-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "AccessibilityMapper-Info.plist"; sourceTree = SOURCE_ROOT; };
 		436985EE2FCC906600BB2433 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		4393D0C92FCA4EE70041C86E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		4393D0CA2FCA4EE70041C86E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -67,6 +68,7 @@
 		B59318A84C710677F29C21F6 /* AccessibilityMapper */ = {
 			isa = PBXGroup;
 			children = (
+				4338C74E301A5C030040C70D /* AccessibilityMapper-Info.plist */,
 				43F885C02FCE399F00E5A4F0 /* AccessibilityMapper.sdef */,
 				43F885BE2FCE38B200E5A4F0 /* ScriptCommands.swift */,
 				43F885BC2FCE2D9A00E5A4F0 /* PrivacyInfo.xcprivacy */,
@@ -181,13 +183,16 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 44;
+				CURRENT_PROJECT_VERSION = 45;
 				DEAD_CODE_STRIPPING = YES;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = Sources/AccessibilityMapper/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = AccessibilityMapper;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "AccessibilityMapper-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Accessibility Mapper";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Druware Software Development. All rights reserved.";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -337,13 +342,16 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 44;
+				CURRENT_PROJECT_VERSION = 45;
 				DEAD_CODE_STRIPPING = YES;
 				EMBED_ASSET_PACKS_IN_PRODUCT_BUNDLE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
-				INFOPLIST_FILE = Sources/AccessibilityMapper/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = AccessibilityMapper;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.business";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "AccessibilityMapper-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Accessibility Mapper";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Druware Software Development. All rights reserved.";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
