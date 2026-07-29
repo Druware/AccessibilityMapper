@@ -1,4 +1,4 @@
 #  TODO
 
-* adjust teh initial input focus to the xip code search
+* adjust the initial input focus to the zip code search
 

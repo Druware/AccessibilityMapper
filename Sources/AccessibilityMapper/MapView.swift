@@ -20,6 +20,10 @@ import AppKit
 
 // MARK: - Annotation model
 
+private final class MarkerButton: NSButton {
+    var annotation: BullseyeAnnotation?
+}
+
 final class BullseyeAnnotation: NSObject, MKAnnotation {
     let marker: BullseyeMarker
 
@@ -248,9 +252,9 @@ struct MapView: NSViewRepresentable {
                 r.strokeColor = NSColor.systemRed.withAlphaComponent(sel ? 0.85 : 0.5)
                 r.fillColor   = NSColor.systemRed.withAlphaComponent(sel ? 0.38 : 0.20)
             case "safeRoutes":
-                let darkGreen = NSColor(red: 0.0, green: 0.48, blue: 0.15, alpha: 1.0)
-                r.strokeColor = darkGreen.withAlphaComponent(sel ? 0.90 : 0.60)
-                r.fillColor   = darkGreen.withAlphaComponent(sel ? 0.32 : 0.17)
+                let teal = NSColor(red: 0.0, green: 0.62, blue: 0.72, alpha: 1.0)
+                r.strokeColor = teal.withAlphaComponent(sel ? 0.90 : 0.60)
+                r.fillColor   = teal.withAlphaComponent(sel ? 0.32 : 0.17)
             case "middle":
                 r.strokeColor = NSColor.systemOrange.withAlphaComponent(sel ? 0.85 : 0.5)
                 r.fillColor   = NSColor.systemOrange.withAlphaComponent(sel ? 0.32 : 0.17)
@@ -279,10 +283,18 @@ struct MapView: NSViewRepresentable {
             view.image = icon
             view.centerOffset = CGPoint(x: 0, y: offsetY)
 
-            let btn = NSButton(title: "Delete", target: nil, action: nil)
+            let btn = MarkerButton(title: "Delete", target: self, action: #selector(deleteMarker(_:)))
             btn.bezelStyle = .rounded
+            btn.annotation = ann
             view.rightCalloutAccessoryView = btn
             return view
+        }
+
+        @objc fileprivate func deleteMarker(_ sender: MarkerButton) {
+            guard let ann = sender.annotation else { return }
+            Task { @MainActor in
+                self.document.wrappedValue.markers.removeAll { $0.id == ann.marker.id }
+            }
         }
 
         func mapView(_ map: MKMapView, didSelect view: MKAnnotationView) {

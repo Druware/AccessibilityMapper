@@ -46,26 +46,37 @@ struct AboutView: View {
 
             // ── Copyright ─────────────────────────────────────────────
             VStack(spacing: 4) {
-                Text("Copyright © 2026 Druware Software Development")
+                Text("Copyright © 2026 Druware Software Designs")
                     .font(.footnote.weight(.medium))
-                Text("All rights reserved.")
+                Text("Dual Licensed — Open Source & Commercial")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
 
-            // ── GPL notice ────────────────────────────────────────────
-            VStack(spacing: 6) {
-                (Text("This program is free software: you can redistribute it and/or modify it under the terms of the ")
-                + Text("GNU General Public License").fontWeight(.medium)
-                + Text(" as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version."))
-                    .multilineTextAlignment(.center)
+            // ── Dual license notice ────────────────────────────────────
+            VStack(spacing: 10) {
+                VStack(spacing: 4) {
+                    Text("Open Source License")
+                        .fontWeight(.medium)
+                    (Text("This source code is available under the ")
+                    + Text("GNU General Public License v3").fontWeight(.medium)
+                    + Text(". You may use, modify, and distribute it under those terms."))
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                    Link("View GPL v3 license", destination: URL(string: "https://www.gnu.org/licenses/gpl-3.0.html")!)
+                }
 
-                Text("This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.")
-                    .multilineTextAlignment(.center)
-                    .foregroundStyle(.secondary)
+                Divider()
+                    .padding(.horizontal, 40)
 
-                Link("View full license text (GPL v3)", destination: URL(string: "https://www.gnu.org/licenses/gpl-3.0.html")!)
-                    .font(.footnote)
+                VStack(spacing: 4) {
+                    Text("Commercial License")
+                        .fontWeight(.medium)
+                    Text("A commercial license is available from Druware Software Designs for use in proprietary or closed-source products.")
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                    Link("Learn about commercial licensing", destination: URL(string: "https://druware.com/accessibilitymapper/licensing")!)
+                }
             }
             .font(.caption)
             .multilineTextAlignment(.center)

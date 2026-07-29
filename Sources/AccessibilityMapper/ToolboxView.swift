@@ -58,7 +58,7 @@ struct ToolboxView: View {
 
             VStack(alignment: .leading, spacing: 5) {
                 LegendRow(color: .red,    label: "Walk         —  0.5 mi", isEnabled: $viewModel.showWalk)
-                LegendRow(color: Color(red: 0.0, green: 0.48, blue: 0.15), label: "Safe Routes  —  1.0 mi", isEnabled: $viewModel.showSafeRoutes)
+                LegendRow(color: Color(red: 0.0, green: 0.62, blue: 0.72), label: "Safe Routes  —  1.0 mi", isEnabled: $viewModel.showSafeRoutes)
                 LegendRow(color: .orange, label: "Bike         —  2.0 mi", isEnabled: $viewModel.showBike)
                 LegendRow(color: .blue,   label: "LSV          —  3.0 mi", isEnabled: $viewModel.showLSV)
             }
@@ -322,7 +322,7 @@ struct MarkerRow: View {
                 TextField("Name...", text: $label)
                     .font(.system(size: 11, weight: .medium))
                     .textFieldStyle(.plain)
-                    .onChange(of: label) { newValue in onRename(newValue) }
+                    .onChange(of: label) { _, newValue in onRename(newValue) }
 
                 HStack(spacing: 6) {
                     Text(String(format: "%.5f°", marker.latitude))

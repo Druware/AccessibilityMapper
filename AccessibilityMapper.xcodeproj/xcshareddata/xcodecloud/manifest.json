@@ -1,0 +1,9 @@
+{
+  "id" : "703b9537-5f21-4059-b7bc-79bb5aed0b6b",
+  "targets" : [
+    {
+      "id" : "0a87a6d4-e639-4e54-b5c8-c1c2a75f2b9f",
+      "name" : "AccessibilityMapper"
+    }
+  ]
+}
