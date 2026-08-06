@@ -11,8 +11,11 @@
 			<string>Accessibility Map</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
+				<string>com.druware.accmap</string>
 				<string>com.openbcm.accmap</string>
 			</array>
 		</dict>
@@ -21,6 +24,26 @@
 	<true/>
 	<key>OSAScriptingDefinition</key>
 	<string>AccessibilityMapper.sdef</string>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.json</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Accessibility Map (legacy)</string>
+			<key>UTTypeIdentifier</key>
+			<string>com.openbcm.accmap</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>accmap</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -33,7 +56,7 @@
 			<key>UTTypeIconFile</key>
 			<string>docicon</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.openbcm.accmap</string>
+			<string>com.druware.accmap</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>
