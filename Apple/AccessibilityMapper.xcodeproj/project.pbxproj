@@ -25,11 +25,11 @@
 		430A4A702FC0F26B009D85DE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4338C74E301A5C030040C70D /* AccessibilityMapper-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "AccessibilityMapper-Info.plist"; sourceTree = SOURCE_ROOT; };
 		436985EE2FCC906600BB2433 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
-		4393D0C92FCA4EE70041C86E /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		4393D0CA2FCA4EE70041C86E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		439407543024F5F800A30539 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		439407553024F5F800A30539 /* LICENSE-COMMERCIAL */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LICENSE-COMMERCIAL"; sourceTree = "<group>"; };
+		439407563024F5F800A30539 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		43F1D0802FCC87A4004AFE80 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		43F1D0812FCC87C1004AFE80 /* CHANGE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CHANGE.md; sourceTree = "<group>"; };
-		43F885BB2FCE2D8900E5A4F0 /* LICENSE-COMMERCIAL */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LICENSE-COMMERCIAL"; sourceTree = "<group>"; };
 		43F885BC2FCE2D9A00E5A4F0 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		43F885BE2FCE38B200E5A4F0 /* ScriptCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptCommands.swift; sourceTree = "<group>"; };
 		43F885C02FCE399F00E5A4F0 /* AccessibilityMapper.sdef */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = AccessibilityMapper.sdef; sourceTree = "<group>"; };
@@ -55,11 +55,11 @@
 		8613BBC7CB1D063F8A8F023E = {
 			isa = PBXGroup;
 			children = (
-				43F885BB2FCE2D8900E5A4F0 /* LICENSE-COMMERCIAL */,
+				439407543024F5F800A30539 /* LICENSE */,
+				439407553024F5F800A30539 /* LICENSE-COMMERCIAL */,
+				439407563024F5F800A30539 /* README.md */,
 				43F1D0812FCC87C1004AFE80 /* CHANGE.md */,
 				43F1D0802FCC87A4004AFE80 /* TODO.md */,
-				4393D0C92FCA4EE70041C86E /* LICENSE */,
-				4393D0CA2FCA4EE70041C86E /* README.md */,
 				B59318A84C710677F29C21F6 /* AccessibilityMapper */,
 				5AB73518310B371D342D6F76 /* Products */,
 			);
@@ -198,7 +198,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.druware.AccessibilityMapper;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
@@ -357,7 +357,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.druware.AccessibilityMapper;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
