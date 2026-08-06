@@ -1,0 +1,83 @@
+# .NET / Visual Studio
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+# Rider per-user settings sit beside the .sln, outside .idea/
+*.DotSettings.user
+
+# VS Code
+.vscode/
+
+# OS shell cruft
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# MSIX packaging output (build/Package and build/*.ps1 are tracked)
+build/out/
+build/staging/
+
+# ...and packages built anywhere else: -OutputDirectory, or Visual Studio's own
+# packaging folders. Note *.appx does not match Package.appxmanifest.
+AppPackages/
+BundleArtifacts/
+*.msix
+*.msixbundle
+*.msixupload
+*.appx
+*.appxbundle
+*.appxsym
+*.appinstaller
+
+# Code-signing material — never commit
+*.pfx
+*.cer
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# AI agent files — local only, never commit
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+AGENTS.local.md
+GEMINI.md
+.claude/
+.codex/
+.cursor/
+.cursorrules
+.windsurf/
+.aider*
+.mcp.json

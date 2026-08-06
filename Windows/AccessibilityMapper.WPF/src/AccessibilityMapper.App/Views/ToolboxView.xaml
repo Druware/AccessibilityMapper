@@ -1,0 +1,391 @@
+<UserControl x:Class="AccessibilityMapper.App.Views.ToolboxView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:converters="clr-namespace:AccessibilityMapper.App.Converters"
+             xmlns:views="clr-namespace:AccessibilityMapper.App.Views"
+             mc:Ignorable="d"
+             d:DesignWidth="240" d:DesignHeight="760">
+
+    <UserControl.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter" />
+        <converters:BoundaryTypeDisplayConverter x:Key="BoundaryTypeDisplayConverter" />
+        <converters:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter" />
+        <converters:MarkerGlyphBrushConverter x:Key="MarkerGlyphBrushConverter" />
+        <converters:SearchEnabledConverter x:Key="SearchEnabledConverter" />
+
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="Margin" Value="12,14,12,6" />
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel>
+
+            <!-- Header -->
+            <TextBlock Text="Toolbox" FontSize="14" FontWeight="Bold" Margin="12,10,12,4" />
+
+            <!-- ==================== TOOLS ==================== -->
+            <TextBlock Text="TOOLS" Style="{StaticResource SectionHeaderStyle}" />
+
+            <RadioButton x:Name="SelectToolRadio" GroupName="ToolMode" Cursor="Hand" Margin="8,2"
+                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                         IsChecked="{Binding IsPlacingBullseye, Converter={StaticResource InverseBooleanConverter}}">
+                <RadioButton.Template>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="RowBorder" HorizontalAlignment="Stretch" CornerRadius="4" Padding="8,6" Background="Transparent">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Path x:Name="Icon" Grid.Column="0" Width="16" Height="16" Margin="0,0,8,0"
+                                      Stretch="Uniform" Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                      Data="M3,2 L3,18 L7.5,14.5 L10,20 L12.5,19 L10,13.5 L16,13.5 Z" />
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="Title" Text="Select" FontSize="12"
+                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                    <TextBlock Text="Move map, inspect markers" FontSize="10"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                                <Path x:Name="Check" Grid.Column="2" Width="12" Height="12" Margin="4,0,0,0"
+                                      Visibility="Collapsed" Stroke="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                      StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round" Data="M2,7 L6,11 L14,2" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="RowBorder" Property="Background" Value="#1F0078D4" />
+                                <Setter TargetName="Title" Property="FontWeight" Value="Bold" />
+                                <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                <Setter TargetName="Icon" Property="Fill" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                <Setter TargetName="Check" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </RadioButton.Template>
+            </RadioButton>
+
+            <RadioButton x:Name="PlaceToolRadio" GroupName="ToolMode" Cursor="Hand" Margin="8,2,8,6"
+                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                         IsChecked="{Binding IsPlacingBullseye}">
+                <RadioButton.Template>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="RowBorder" HorizontalAlignment="Stretch" CornerRadius="4" Padding="8,6" Background="Transparent">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <views:TargetGlyph x:Name="Icon" Grid.Column="0" Width="16" Height="16" Margin="0,0,8,0"
+                                                    GlyphBrush="{DynamicResource TextFillColorPrimaryBrush}" />
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="Title" Text="Accessible Location" FontSize="12"
+                                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                    <TextBlock Text="Click map to place rings" FontSize="10"
+                                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                                <Path x:Name="Check" Grid.Column="2" Width="12" Height="12" Margin="4,0,0,0"
+                                      Visibility="Collapsed" Stroke="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                      StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round"
+                                      StrokeEndLineCap="Round" Data="M2,7 L6,11 L14,2" />
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="RowBorder" Property="Background" Value="#1F0078D4" />
+                                <Setter TargetName="Title" Property="FontWeight" Value="Bold" />
+                                <Setter TargetName="Title" Property="Foreground" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                <Setter TargetName="Icon" Property="GlyphBrush" Value="{DynamicResource AccentTextFillColorPrimaryBrush}" />
+                                <Setter TargetName="Check" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </RadioButton.Template>
+            </RadioButton>
+
+            <Separator Margin="8,4" />
+
+            <!-- ==================== RADIUS LEGEND ==================== -->
+            <TextBlock Text="RADIUS LEGEND" Style="{StaticResource SectionHeaderStyle}" />
+
+            <CheckBox IsChecked="{Binding ShowWalk}" Cursor="Hand" Margin="12,2" HorizontalAlignment="Stretch">
+                <CheckBox.Style>
+                    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </CheckBox.Style>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="12" Height="12" Fill="#33FF3B30" Stroke="#FF3B30" StrokeThickness="1" Margin="0,0,6,0" />
+                    <TextBlock Text="Walk         —  0.5 mi" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center" />
+                </StackPanel>
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding ShowSafeRoutes}" Cursor="Hand" Margin="12,2" HorizontalAlignment="Stretch">
+                <CheckBox.Style>
+                    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </CheckBox.Style>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="12" Height="12" Fill="#33009EB8" Stroke="#009EB8" StrokeThickness="1" Margin="0,0,6,0" />
+                    <TextBlock Text="Safe Routes  —  1.0 mi" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center" />
+                </StackPanel>
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding ShowBike}" Cursor="Hand" Margin="12,2" HorizontalAlignment="Stretch">
+                <CheckBox.Style>
+                    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </CheckBox.Style>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="12" Height="12" Fill="#33FF9500" Stroke="#FF9500" StrokeThickness="1" Margin="0,0,6,0" />
+                    <TextBlock Text="Bike         —  2.0 mi" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center" />
+                </StackPanel>
+            </CheckBox>
+
+            <CheckBox IsChecked="{Binding ShowLsv}" Cursor="Hand" Margin="12,2,12,6" HorizontalAlignment="Stretch">
+                <CheckBox.Style>
+                    <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </CheckBox.Style>
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse Width="12" Height="12" Fill="#33007AFF" Stroke="#007AFF" StrokeThickness="1" Margin="0,0,6,0" />
+                    <TextBlock Text="LSV          —  3.0 mi" FontFamily="Consolas" FontSize="11" VerticalAlignment="Center" />
+                </StackPanel>
+            </CheckBox>
+
+            <Separator Margin="8,4" />
+
+            <!-- ==================== BOUNDARIES ==================== -->
+            <TextBlock Text="BOUNDARIES" Style="{StaticResource SectionHeaderStyle}" />
+
+            <ComboBox x:Name="BoundaryTypeCombo" Width="140" HorizontalAlignment="Left"
+                      Margin="12,0,12,6" SelectedIndex="0">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource BoundaryTypeDisplayConverter}}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <Grid Margin="12,0,12,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="0" Margin="0,0,6,0">
+                    <TextBox x:Name="BoundarySearchBox" VerticalContentAlignment="Center"
+                              KeyDown="BoundarySearchBox_KeyDown" />
+                    <TextBlock Text="Search…" IsHitTestVisible="False" Margin="8,0,0,0" VerticalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                               Visibility="{Binding Text, ElementName=BoundarySearchBox, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
+                </Grid>
+
+                <!-- Padding="0": the Fluent Button default padding (11,5,11,6) exceeds these
+                     fixed-size icon buttons and collapses the glyph to zero width. -->
+                <Button x:Name="BoundarySearchButton" Grid.Column="1" Width="32" Height="32" Padding="0"
+                        Click="BoundarySearchButton_Click">
+                    <Button.IsEnabled>
+                        <MultiBinding Converter="{StaticResource SearchEnabledConverter}">
+                            <Binding ElementName="BoundarySearchBox" Path="Text" />
+                            <Binding Path="IsFetchingBoundary" />
+                        </MultiBinding>
+                    </Button.IsEnabled>
+                    <Grid Width="16" Height="16">
+                        <Grid Visibility="{Binding IsFetchingBoundary, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}">
+                            <Ellipse Width="10" Height="10" Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                     StrokeThickness="1.4" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                            <Line X1="9" Y1="9" X2="15" Y2="15" Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                  StrokeThickness="1.4" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+                        </Grid>
+                        <ProgressBar IsIndeterminate="True" Width="14" Height="14"
+                                     Visibility="{Binding IsFetchingBoundary, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    </Grid>
+                </Button>
+            </Grid>
+
+            <ItemsControl ItemsSource="{Binding Boundaries}" Margin="12,0,12,8">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="#14AF52DE" CornerRadius="5" Padding="8,6" Margin="0,0,0,6">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Path Grid.Column="0" Width="14" Height="14" Margin="0,0,6,0" Stretch="Uniform"
+                                      Fill="#AF52DE" VerticalAlignment="Center"
+                                      Data="M2,4 L8,2 L14,4 L20,2 L20,18 L14,20 L8,18 L2,20 Z" />
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" TextWrapping="Wrap" MaxHeight="32"
+                                           TextTrimming="CharacterEllipsis" FontSize="11" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                <Button Grid.Column="2" Width="20" Height="20" Margin="4,0,0,0" Padding="0"
+                                        VerticalAlignment="Center"
+                                        Background="Transparent" BorderThickness="0" ToolTip="Delete"
+                                        Command="{Binding DataContext.RemoveBoundaryCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding Id}">
+                                    <Path Width="14" Height="14" Stretch="Uniform"
+                                          Fill="{DynamicResource TextFillColorSecondaryBrush}"
+                                          Data="M6,2 L6,3 L2.5,3 L2.5,5 L17.5,5 L17.5,3 L14,3 L14,2 Z M4,6 L4,17.5 A2,2 0 0 0 6,19.5 L14,19.5 A2,2 0 0 0 16,17.5 L16,6 Z M8,8.5 L9.2,8.5 L9.2,17 L8,17 Z M10.8,8.5 L12,8.5 L12,17 L10.8,17 Z" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Separator Margin="8,4" />
+
+            <!-- ==================== MARKERS ==================== -->
+            <Grid Margin="0,0,12,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="MARKERS" Style="{StaticResource SectionHeaderStyle}" />
+                <Border Grid.Column="1" Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                        CornerRadius="8" Padding="7,1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Markers.Count}" FontSize="10" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </Border>
+            </Grid>
+
+            <TextBlock Margin="12,4,12,8" FontSize="11" TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                       Text="No markers yet.&#x0a;Select Accessible Location, then&#x0a;click anywhere on the map."
+                       Visibility="{Binding Markers.Count, Converter={StaticResource CountToVisibilityConverter}, ConverterParameter=Invert}" />
+
+            <ListBox x:Name="MarkersList" ItemsSource="{Binding Markers}"
+                     SelectedValuePath="Id" SelectedValue="{Binding SelectedMarkerId, Mode=TwoWay}"
+                     BorderThickness="0" Background="Transparent" Margin="8,0,8,6"
+                     MouseDoubleClick="MarkersList_MouseDoubleClick"
+                     Visibility="{Binding Markers.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="8,6" />
+                        <Setter Property="Margin" Value="0,0,0,4" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border x:Name="Bd" CornerRadius="5" Background="{TemplateBinding Background}"
+                                            Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter />
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="#260078D4" />
+                                        </Trigger>
+                                        <Trigger Property="IsSelected" Value="False">
+                                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <views:TargetGlyph Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="16" Height="16"
+                                                Margin="0,0,8,0" VerticalAlignment="Top"
+                                                GlyphBrush="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected, Converter={StaticResource MarkerGlyphBrushConverter}}" />
+
+                            <Grid Grid.Row="0" Grid.Column="1">
+                                <TextBox x:Name="LabelBox" Text="{Binding Label, Mode=OneWay}" BorderThickness="0"
+                                         Background="Transparent" Padding="0" FontSize="12"
+                                         LostFocus="MarkerLabelBox_LostFocus" KeyDown="MarkerLabelBox_KeyDown" />
+                                <TextBlock Text="Name..." IsHitTestVisible="False" FontSize="12"
+                                           Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                           Visibility="{Binding Text, ElementName=LabelBox, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
+                            </Grid>
+
+                            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Margin="0,2,0,0">
+                                <TextBlock Text="{Binding Latitude, StringFormat={}{0:F5}°}" FontFamily="Consolas"
+                                           FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0" />
+                                <TextBlock Text="{Binding Longitude, StringFormat={}{0:F5}°}" FontFamily="Consolas"
+                                           FontSize="10" Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+
+                            <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Width="20" Height="20" Padding="0"
+                                    VerticalAlignment="Center"
+                                    Background="Transparent" BorderThickness="0" ToolTip="Delete"
+                                    Command="{Binding DataContext.DeleteMarkerCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    CommandParameter="{Binding Id}">
+                                <Path Width="14" Height="14" Stretch="Uniform"
+                                      Fill="{DynamicResource TextFillColorSecondaryBrush}"
+                                      Data="M6,2 L6,3 L2.5,3 L2.5,5 L17.5,5 L17.5,3 L14,3 L14,2 Z M4,6 L4,17.5 A2,2 0 0 0 6,19.5 L14,19.5 A2,2 0 0 0 16,17.5 L16,6 Z M8,8.5 L9.2,8.5 L9.2,17 L8,17 Z M10.8,8.5 L12,8.5 L12,17 L10.8,17 Z" />
+                            </Button>
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Separator Margin="8,4" />
+
+            <!-- ==================== STATUS ==================== -->
+            <Border Padding="12,8">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="Transparent" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsPlacingBullseye}" Value="True">
+                                <Setter Property="Background" Value="#140078D4" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <TextBlock Text="Click map to place accessible location" FontSize="11"
+                               Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                               Visibility="{Binding IsPlacingBullseye, Converter={StaticResource BoolToVisibilityConverter}}" />
+                    <TextBlock Text="Select mode" FontSize="11"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               Visibility="{Binding IsPlacingBullseye, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Invert}" />
+                </Grid>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

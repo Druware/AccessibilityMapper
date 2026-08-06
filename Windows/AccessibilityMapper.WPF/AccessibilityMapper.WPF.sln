@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2A7E4518-FE47-4F09-A7B3-19BA8CE8332B}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		issues.md = issues.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{C6D0C699-5D93-410D-8324-A47B86A70593}"
+	ProjectSection(SolutionItems) = preProject
+		docs\CONVERSION-SPEC.md = docs\CONVERSION-SPEC.md
+		docs\DISTRIBUTION.md = docs\DISTRIBUTION.md
+		docs\MAP-BRIDGE.md = docs\MAP-BRIDGE.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{6BFA5E83-260B-4AD1-87D0-C42B6BE9C8AE}"
+	ProjectSection(SolutionItems) = preProject
+		build\Build-Packages.ps1 = build\Build-Packages.ps1
+		build\New-AppIcons.ps1 = build\New-AppIcons.ps1
+		build\New-DevCertificate.ps1 = build\New-DevCertificate.ps1
+		build\Package\Package.appxmanifest = build\Package\Package.appxmanifest
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccessibilityMapper.App", "src\AccessibilityMapper.App\AccessibilityMapper.App.csproj", "{DF30E39E-577D-4314-BF04-773B34048E99}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Debug|x64.Build.0 = Debug|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Debug|x86.Build.0 = Debug|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Release|x64.ActiveCfg = Release|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Release|x64.Build.0 = Release|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Release|x86.ActiveCfg = Release|Any CPU
+		{DF30E39E-577D-4314-BF04-773B34048E99}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DF30E39E-577D-4314-BF04-773B34048E99} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+	EndGlobalSection
+EndGlobal

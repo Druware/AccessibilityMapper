@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+  MSIX manifest for both distribution channels.
+
+  build/Build-Packages.ps1 stages a copy of this file and rewrites three Identity
+  attributes before packing, so nothing here needs editing per build:
+
+    Version               taken from <Version> in AccessibilityMapper.App.csproj, with
+                          ".0" appended (the Store requires a 0 revision field).
+    ProcessorArchitecture set per-package to x64 or arm64.
+    Publisher / Name      left as-is for -Channel Store; overridden for -Channel Direct
+                          so they match whichever code-signing certificate is used.
+
+  BEFORE THE FIRST STORE SUBMISSION, replace the two placeholders below with the
+  values Partner Center shows under Product identity for your reserved app name.
+  They must match byte-for-byte or the upload is rejected.
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <Identity
+    Name="DruwareSoftwareDesigns.AccessibilityMapper"
+    Publisher="CN=REPLACE-WITH-PARTNER-CENTER-PUBLISHER-ID"
+    Version="1.0.0.0"
+    ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>Accessibility Mapper</DisplayName>
+    <PublisherDisplayName>Druware Software Designs</PublisherDisplayName>
+    <Logo>Images\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <!-- 10.0.17763 (Windows 10 1809) is the floor for reliable MSIX desktop
+         deployment and comfortably covers the WebView2 Runtime's requirements. -->
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.26100.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+                 Executable="AccessibilityMapper.exe"
+                 EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="Accessibility Mapper"
+        Description="Map walking, safe-route, bike and low-speed-vehicle accessibility zones around any location."
+        BackgroundColor="transparent"
+        Square150x150Logo="Images\Square150x150Logo.png"
+        Square44x44Logo="Images\Square44x44Logo.png">
+        <uap:DefaultTile
+          ShortName="Accessibility Mapper"
+          Square71x71Logo="Images\Square71x71Logo.png"
+          Square310x310Logo="Images\Square310x310Logo.png"
+          Wide310x150Logo="Images\Wide310x150Logo.png" />
+        <uap:SplashScreen Image="Images\SplashScreen.png" BackgroundColor="#0A84FF" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <!-- runFullTrust: required for any packaged Win32/WPF desktop app.
+         internetClient: geocoding and boundary lookups via Nominatim, plus
+         OpenStreetMap tile fetches from the embedded map. -->
+    <rescap:Capability Name="runFullTrust" />
+    <Capability Name="internetClient" />
+  </Capabilities>
+
+</Package>

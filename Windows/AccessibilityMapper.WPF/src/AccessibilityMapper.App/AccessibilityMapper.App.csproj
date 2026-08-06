@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>AccessibilityMapper</AssemblyName>
+    <ApplicationIcon>Assets\Icons\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <!-- Shipping identity. Version is the single source of truth for the MSIX package
+       version too: build/Build-Packages.ps1 reads it from here and appends ".0",
+       because the Store requires the revision field of Major.Minor.Build.Revision
+       to be 0. Bump <Version> and both channels follow. -->
+  <PropertyGroup>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>Accessibility Mapper</Product>
+    <AssemblyTitle>Accessibility Mapper</AssemblyTitle>
+    <Company>Druware Software Designs</Company>
+    <Copyright>Copyright © 2026 Druware Software Designs</Copyright>
+    <Description>Map walking, safe-route, bike and low-speed-vehicle accessibility zones around any location.</Description>
+  </PropertyGroup>
+
+  <!-- Distribution targets. Every Windows architecture .NET 10 supports is listed, so a
+       publish for any of them restores without editing this file. Both channels publish
+       self-contained, so neither the Store package nor the direct download needs a .NET
+       runtime prerequisite. -->
+  <PropertyGroup>
+    <RuntimeIdentifiers>win-x64;win-arm64;win-x86</RuntimeIdentifiers>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+  </PropertyGroup>
+
+  <!-- Any publish that names a runtime is a deployable one, so it carries the runtime with
+       it and no caller has to pass the self-contained flag. Conditioned on
+       RuntimeIdentifier because self-contained without a RID is an error, and plain
+       `dotnet build` during development sets neither. -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4078.44" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- ApplicationIcon embeds this in the exe; Resource additionally makes it
+         addressable as a pack:// URI, which is how the About dialog shows it. -->
+    <Resource Include="Assets\Icons\app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets/Map/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- Bundled U.S. Census cartographic boundaries (public domain). Regenerated only when
+         moving to a new Census vintage: build/Convert-CensusBoundaries.ps1. -->
+    <Content Include="Assets/Boundaries/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

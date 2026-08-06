@@ -1,0 +1,22 @@
+<UserControl x:Class="AccessibilityMapper.App.Views.TargetGlyph"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             x:Name="Root"
+             d:DesignWidth="20" d:DesignHeight="20">
+    <!-- Simple vector "target/scope" glyph: ring + center dot + 4 crosshair ticks,
+         reproducing the shape (not exact pixel art) of the map bullseye icon per
+         CONVERSION-SPEC.md §3.1/§5.5. Color is supplied via GlyphBrush. -->
+    <Viewbox Stretch="Uniform">
+        <Grid Width="24" Height="24">
+            <Ellipse Width="16" Height="16" Stroke="{Binding GlyphBrush, ElementName=Root}" StrokeThickness="2" />
+            <Ellipse Width="5" Height="5" Fill="{Binding GlyphBrush, ElementName=Root}" />
+            <Line X1="12" Y1="0" X2="12" Y2="4" Stroke="{Binding GlyphBrush, ElementName=Root}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+            <Line X1="12" Y1="20" X2="12" Y2="24" Stroke="{Binding GlyphBrush, ElementName=Root}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+            <Line X1="0" Y1="12" X2="4" Y2="12" Stroke="{Binding GlyphBrush, ElementName=Root}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+            <Line X1="20" Y1="12" X2="24" Y2="12" Stroke="{Binding GlyphBrush, ElementName=Root}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" />
+        </Grid>
+    </Viewbox>
+</UserControl>

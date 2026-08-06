@@ -1,0 +1,95 @@
+<Window x:Class="AccessibilityMapper.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:AccessibilityMapper.App"
+        xmlns:views="clr-namespace:AccessibilityMapper.App.Views"
+        xmlns:converters="clr-namespace:AccessibilityMapper.App.Converters"
+        mc:Ignorable="d"
+        Title="{Binding Title}"
+        Height="800" Width="1200"
+        MinHeight="600" MinWidth="900"
+        Loaded="MainWindow_Loaded">
+
+    <Window.Resources>
+        <converters:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter" />
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Ctrl" Key="N" Command="{Binding NewDocumentCommand}" />
+        <KeyBinding Modifiers="Ctrl" Key="O" Command="{Binding OpenCommand}" />
+        <KeyBinding Modifiers="Ctrl" Key="S" Command="{Binding SaveCommand}" />
+        <KeyBinding Modifiers="Ctrl+Shift" Key="S" Command="{Binding SaveAsCommand}" />
+    </Window.InputBindings>
+
+    <DockPanel LastChildFill="True">
+
+        <!-- ==================== MENU ==================== -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" Command="{Binding NewDocumentCommand}" InputGestureText="Ctrl+N" />
+                <MenuItem Header="_Open..." Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
+                <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
+                <MenuItem Header="Save _As..." Command="{Binding SaveAsCommand}" InputGestureText="Ctrl+Shift+S" />
+                <Separator />
+                <MenuItem Header="E_xit" Click="ExitMenuItem_Click" InputGestureText="Alt+F4" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="About Accessibility Mapper" Click="AboutMenuItem_Click" />
+            </MenuItem>
+        </Menu>
+
+        <!-- ==================== TOP TOOLBAR (CONVERSION-SPEC.md §5.7) ==================== -->
+        <Border DockPanel.Dock="Top" Padding="14,9" BorderThickness="0,0,0,1"
+                Background="{DynamicResource ApplicationBackgroundBrush}"
+                BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+            <StackPanel Orientation="Horizontal">
+
+                <Path Width="18" Height="18" Stretch="Uniform" Margin="0,0,10,0" VerticalAlignment="Center"
+                      Fill="{DynamicResource AccentFillColorDefaultBrush}"
+                      Data="M2,4 L8,2 L14,4 L20,2 L20,18 L14,20 L8,18 L2,20 Z" />
+
+                <Grid Width="130" VerticalAlignment="Center">
+                    <TextBox x:Name="ZipTextBox"
+                             Text="{Binding ZipCode, UpdateSourceTrigger=PropertyChanged}"
+                             VerticalContentAlignment="Center"
+                             KeyDown="ZipTextBox_KeyDown" />
+                    <TextBlock Text="ZIP code" IsHitTestVisible="False" Margin="8,0,0,0" VerticalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                               Visibility="{Binding Text, ElementName=ZipTextBox, Converter={StaticResource StringEmptyToVisibilityConverter}}" />
+                </Grid>
+
+                <Button Content="Go" Style="{StaticResource AccentButtonStyle}" Command="{Binding GeocodeCommand}"
+                        Padding="14,4" Margin="8,0,0,0" VerticalAlignment="Center" />
+
+                <Border Width="1" Margin="14,2" Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
+
+                <ComboBox Width="140" VerticalAlignment="Center" SelectedIndex="{Binding MapTypeRaw}"
+                          ToolTip="Map display style">
+                    <ComboBoxItem Content="Standard" />
+                    <ComboBoxItem Content="Satellite" />
+                    <ComboBoxItem Content="Hybrid" />
+                </ComboBox>
+
+            </StackPanel>
+        </Border>
+
+        <!-- ==================== MAIN AREA ==================== -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240" MinWidth="220" MaxWidth="300" />
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <views:ToolboxView Grid.Column="0" DataContext="{Binding}" />
+
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          Background="Transparent" ResizeBehavior="PreviousAndNext" ShowsPreview="True" />
+
+            <views:MapControl Grid.Column="2" DataContext="{Binding}" />
+        </Grid>
+
+    </DockPanel>
+</Window>

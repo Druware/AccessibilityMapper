@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Accessibility Mapper</title>
+<link rel="stylesheet" href="https://appassets/maplibre-gl.css" />
+<style>
+  html, body, #map { height: 100%; margin: 0; padding: 0; }
+
+  /* Shown only if the map fails to construct, e.g. no WebGL in the WebView. */
+  #map-error {
+    display: none;
+    position: absolute;
+    inset: 0;
+    padding: 24px;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    font-size: 10pt;
+    color: #444;
+    background: #f3f3f3;
+  }
+
+  .icon-wrap { display: flex; flex-direction: column; align-items: center; pointer-events: none; }
+  .bullseye-glyph {
+    box-sizing: border-box;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: #FF3B30;
+    background:
+      linear-gradient(#FF3B30, #FF3B30) center / 2px 55% no-repeat,
+      linear-gradient(#FF3B30, #FF3B30) center / 55% 2px no-repeat;
+    position: relative;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .bullseye-glyph::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 30%; height: 30%;
+    min-width: 3px; min-height: 3px;
+    background: #FF3B30;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .label-pill {
+    margin-top: 2px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.50);
+    color: #fff;
+    font-size: 9pt;
+    font-family: -apple-system, "Segoe UI", sans-serif;
+    white-space: nowrap;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .label-pill.selected {
+    background: rgba(0, 0, 0, 0.65);
+    font-weight: 500;
+    font-size: 10pt;
+  }
+  .marker-popup { font-family: -apple-system, "Segoe UI", sans-serif; min-width: 140px; }
+  .popup-title { font-weight: 600; margin-bottom: 2px; }
+  .popup-subtitle { font-family: Consolas, monospace; font-size: 10pt; color: #555; margin-bottom: 6px; }
+  .popup-delete {
+    background: #FF3B30; color: #fff; border: none; border-radius: 4px;
+    padding: 4px 10px; cursor: pointer; font-size: 9pt;
+  }
+  .popup-delete:hover { background: #d9291f; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="map-error"></div>
+
+<!-- Classic script on purpose: it still runs when the module below fails to load, which is
+     the case a blank map surface is least able to explain for itself. Capture phase so
+     resource-load failures are caught as well as thrown errors. -->
+<script>
+  window.__mapDiag = [];
+  function __mapShow(text) {
+    window.__mapDiag.push(text);
+    var el = document.getElementById('map-error');
+    el.style.display = 'block';
+    el.textContent = window.__mapDiag.join('\n');
+  }
+  window.addEventListener('error', function (e) {
+    if (e.target && e.target !== window && e.target.src) {
+      __mapShow('Failed to load: ' + e.target.src);
+    } else {
+      __mapShow(e.message + '  @ ' + (e.filename || '?') + ':' + (e.lineno || '?'));
+    }
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) {
+    __mapShow('Unhandled promise rejection: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+  });
+  try {
+    var probe = document.createElement('canvas');
+    if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) {
+      __mapShow('No WebGL context available in this WebView.');
+    }
+  } catch (err) {
+    __mapShow('WebGL probe threw: ' + err);
+  }
+</script>
+
+<script type="module" src="https://appassets/map.js"></script>
+</body>
+</html>

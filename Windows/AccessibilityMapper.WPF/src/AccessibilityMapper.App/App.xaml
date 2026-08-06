@@ -1,0 +1,10 @@
+﻿<Application x:Class="AccessibilityMapper.App.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:AccessibilityMapper.App"
+             StartupUri="MainWindow.xaml"
+             ThemeMode="System">
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>
