@@ -5,70 +5,133 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         mc:Ignorable="d"
         Title="About Accessibility Mapper"
-        SizeToContent="WidthAndHeight"
+        Width="440"
+        SizeToContent="Height"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False">
 
-    <!-- CONVERSION-SPEC.md §9.3 — text reproduced verbatim. -->
-    <StackPanel Width="380" Margin="28,24,28,24">
+    <Window.Resources>
+        <Style x:Key="AttributionHeadingStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,10,0,2" />
+        </Style>
+        <Style x:Key="AttributionBodyStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        </Style>
+    </Window.Resources>
 
-        <Image Source="pack://application:,,,/Assets/Icons/app.ico" Width="72" Height="72"
-                HorizontalAlignment="Center" Margin="0,0,0,10"
-                RenderOptions.BitmapScalingMode="HighQuality" />
+    <Grid Margin="28,24,28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <TextBlock Text="Accessibility Mapper" FontSize="18" FontWeight="Bold"
-                    HorizontalAlignment="Center" Margin="0,0,0,4" />
-        <TextBlock Text="Version 1.0 (1)" FontSize="12" HorizontalAlignment="Center"
-                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12" />
+        <!-- CONVERSION-SPEC.md §9.3 — text reproduced verbatim. -->
+        <StackPanel Grid.Row="0">
 
-        <Separator Margin="0,0,0,12" />
+            <Image Source="pack://application:,,,/Assets/Icons/app.ico" Width="72" Height="72"
+                    HorizontalAlignment="Center" Margin="0,0,0,10"
+                    RenderOptions.BitmapScalingMode="HighQuality" />
 
-        <TextBlock Text="Copyright © 2026 Druware Software Designs" FontWeight="Medium" FontSize="11"
-                    HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,2" />
-        <TextBlock Text="Dual Licensed — Open Source &amp; Commercial" FontSize="11"
-                    HorizontalAlignment="Center" TextAlignment="Center"
-                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12" />
+            <TextBlock Text="Accessibility Mapper" FontSize="18" FontWeight="Bold"
+                        HorizontalAlignment="Center" Margin="0,0,0,4" />
+            <!-- Filled in from the assembly version so this cannot drift from the build. -->
+            <TextBlock x:Name="VersionText" FontSize="12" HorizontalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12" />
 
-        <TextBlock Text="Open Source License" FontWeight="Medium" FontSize="12"
-                    HorizontalAlignment="Center" Margin="0,0,0,4" />
-        <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontSize="11" Margin="0,0,0,4"
-                    Foreground="{DynamicResource TextFillColorSecondaryBrush}">
-            This source code is available under the <Run FontWeight="Medium" Text="GNU General Public License v3" />. You may use, modify, and distribute it under those terms.
-        </TextBlock>
-        <TextBlock HorizontalAlignment="Center" Margin="0,0,0,12" FontSize="11">
-            <Hyperlink NavigateUri="https://www.gnu.org/licenses/gpl-3.0.html" RequestNavigate="Hyperlink_RequestNavigate">View GPL v3 license</Hyperlink>
-        </TextBlock>
+            <Separator Margin="0,0,0,12" />
 
-        <Separator Margin="0,0,0,12" />
+            <TextBlock Text="Copyright © 2026 Druware Software Designs" FontWeight="Medium" FontSize="11"
+                        HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,2" />
+            <TextBlock Text="Dual Licensed — Open Source &amp; Commercial" FontSize="11"
+                        HorizontalAlignment="Center" TextAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,0,12" />
 
-        <TextBlock Text="Commercial License" FontWeight="Medium" FontSize="12"
-                    HorizontalAlignment="Center" Margin="0,0,0,4" />
-        <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontSize="11" Margin="0,0,0,4"
-                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                    Text="A commercial license is available from Druware Software Designs for use in proprietary or closed-source products." />
-        <TextBlock HorizontalAlignment="Center" FontSize="11">
-            <Hyperlink NavigateUri="https://druware.com/accessibilitymapper/licensing" RequestNavigate="Hyperlink_RequestNavigate">Learn about commercial licensing</Hyperlink>
-        </TextBlock>
+            <TextBlock Text="Open Source License" FontWeight="Medium" FontSize="12"
+                        HorizontalAlignment="Center" Margin="0,0,0,4" />
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontSize="11" Margin="0,0,0,4"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                This source code is available under the <Run FontWeight="Medium" Text="GNU General Public License v3" />. You may use, modify, and distribute it under those terms.
+            </TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="0,0,0,12" FontSize="11">
+                <Hyperlink NavigateUri="https://www.gnu.org/licenses/gpl-3.0.html" RequestNavigate="Hyperlink_RequestNavigate">View GPL v3 license</Hyperlink>
+            </TextBlock>
 
-        <Separator Margin="0,12,0,12" />
+            <Separator Margin="0,0,0,12" />
 
-        <!-- Not from the spec: data attribution for the sources the app actually ships and
-             calls. Census boundary files carry no attribution requirement; OpenStreetMap's
-             ODbL does. -->
-        <TextBlock Text="Map Data" FontWeight="Medium" FontSize="12"
-                    HorizontalAlignment="Center" Margin="0,0,0,4" />
-        <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontSize="11" Margin="0,0,0,6"
-                    Foreground="{DynamicResource TextFillColorSecondaryBrush}">
-            City, county and state boundaries are <Run FontWeight="Medium" Text="U.S. Census Bureau" /> cartographic boundary files, a public domain work of the U.S. Government.
-        </TextBlock>
-        <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontSize="11" Margin="0,0,0,4"
-                    Foreground="{DynamicResource TextFillColorSecondaryBrush}">
-            Location search uses <Run FontWeight="Medium" Text="Nominatim" />, © OpenStreetMap contributors, available under the Open Database License.
-        </TextBlock>
-        <TextBlock HorizontalAlignment="Center" FontSize="11">
-            <Hyperlink NavigateUri="https://www.openstreetmap.org/copyright" RequestNavigate="Hyperlink_RequestNavigate">OpenStreetMap copyright</Hyperlink>
-        </TextBlock>
+            <TextBlock Text="Commercial License" FontWeight="Medium" FontSize="12"
+                        HorizontalAlignment="Center" Margin="0,0,0,4" />
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontSize="11" Margin="0,0,0,4"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="A commercial license is available from Druware Software Designs for use in proprietary or closed-source products." />
+            <TextBlock HorizontalAlignment="Center" FontSize="11">
+                <Hyperlink NavigateUri="https://druware.com/accessibilitymapper/licensing" RequestNavigate="Hyperlink_RequestNavigate">Learn about commercial licensing</Hyperlink>
+            </TextBlock>
 
-    </StackPanel>
+            <Separator Margin="0,12,0,4" />
+
+        </StackPanel>
+
+        <!-- Not from the spec, and deliberately not shared with the Apple build: these credit
+             what the Windows app actually renders and calls. The map is MapLibre GL in a
+             WebView2, not MapKit, so the tile, imagery and rendering credits below have no
+             counterpart on the other platform. -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                      Margin="0,0,-10,0" Padding="0,0,10,0">
+            <StackPanel>
+
+                <TextBlock Text="Map, Data &amp; Components" FontWeight="Medium" FontSize="12"
+                            HorizontalAlignment="Center" Margin="0,4,0,2" />
+
+                <TextBlock Text="Map rendering" Style="{StaticResource AttributionHeadingStyle}" />
+                <TextBlock Style="{StaticResource AttributionBodyStyle}">
+                    <Run FontWeight="Medium" Text="MapLibre GL JS" />, © MapLibre contributors, three-clause BSD license. Bundled with the app and rendered in the Microsoft Edge WebView2 Runtime.
+                </TextBlock>
+                <TextBlock FontSize="11" Margin="0,2,0,0">
+                    <Hyperlink NavigateUri="https://maplibre.org/" RequestNavigate="Hyperlink_RequestNavigate">maplibre.org</Hyperlink>
+                </TextBlock>
+
+                <TextBlock Text="Standard map tiles" Style="{StaticResource AttributionHeadingStyle}" />
+                <TextBlock Style="{StaticResource AttributionBodyStyle}">
+                    Vector tiles from <Run FontWeight="Medium" Text="OpenFreeMap" />, © <Run FontWeight="Medium" Text="OpenMapTiles" />, built from map data © OpenStreetMap contributors under the Open Database License.
+                </TextBlock>
+                <TextBlock FontSize="11" Margin="0,2,0,0">
+                    <Hyperlink NavigateUri="https://openfreemap.org/" RequestNavigate="Hyperlink_RequestNavigate">openfreemap.org</Hyperlink>
+                    <Run Text="  ·  " Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    <Hyperlink NavigateUri="https://openmaptiles.org/" RequestNavigate="Hyperlink_RequestNavigate">openmaptiles.org</Hyperlink>
+                </TextBlock>
+
+                <TextBlock Text="Satellite and Hybrid imagery" Style="{StaticResource AttributionHeadingStyle}" />
+                <TextBlock Style="{StaticResource AttributionBodyStyle}">
+                    Imagery courtesy of <Run FontWeight="Medium" Text="The National Map" />, U.S. Geological Survey — a public domain work of the U.S. Government.
+                </TextBlock>
+                <TextBlock FontSize="11" Margin="0,2,0,0">
+                    <Hyperlink NavigateUri="https://www.usgs.gov/programs/national-geospatial-program/national-map" RequestNavigate="Hyperlink_RequestNavigate">USGS National Map</Hyperlink>
+                </TextBlock>
+
+                <TextBlock Text="Location search" Style="{StaticResource AttributionHeadingStyle}" />
+                <TextBlock Style="{StaticResource AttributionBodyStyle}">
+                    ZIP code lookup uses <Run FontWeight="Medium" Text="Nominatim" />, © OpenStreetMap contributors, available under the Open Database License.
+                </TextBlock>
+                <TextBlock FontSize="11" Margin="0,2,0,0">
+                    <Hyperlink NavigateUri="https://www.openstreetmap.org/copyright" RequestNavigate="Hyperlink_RequestNavigate">OpenStreetMap copyright</Hyperlink>
+                </TextBlock>
+
+                <TextBlock Text="Boundaries" Style="{StaticResource AttributionHeadingStyle}" />
+                <TextBlock Style="{StaticResource AttributionBodyStyle}">
+                    City, county and state boundaries are <Run FontWeight="Medium" Text="U.S. Census Bureau" /> cartographic boundary files, a public domain work of the U.S. Government. They ship with the app and are searched offline.
+                </TextBlock>
+
+                <TextBlock Text="Application components" Style="{StaticResource AttributionHeadingStyle}" />
+                <TextBlock Style="{StaticResource AttributionBodyStyle}">
+                    <Run FontWeight="Medium" Text="Microsoft Edge WebView2 Runtime" />, © Microsoft Corporation. <Run FontWeight="Medium" Text="CommunityToolkit.Mvvm" />, © .NET Foundation and Contributors, MIT license.
+                </TextBlock>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Window>
