@@ -10,10 +10,83 @@
         Title="{Binding Title}"
         Height="800" Width="1200"
         MinHeight="600" MinWidth="900"
+        WindowStyle="None"
         Loaded="MainWindow_Loaded">
+
+    <!-- Extended title bar, WinUI 3 style: the frame is removed so the app's own content
+         reaches the top edge of the window, and the caption buttons below are drawn by the
+         app. CaptionHeight must stay in step with the height of the title bar row, since it
+         is what defines the drag region.
+
+         The glass frame has to stay (-1) — it is what carries the drop shadow, the Windows 11
+         rounded corners and the Mica material. It also makes DWM paint the system caption
+         buttons, 32px tall and hard against the top-right corner, straight over the app's;
+         WindowStyle="None" on the window above is what suppresses those, leaving only the
+         app's own set. -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="48"
+                      GlassFrameThickness="-1"
+                      ResizeBorderThickness="6"
+                      CornerRadius="0"
+                      UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
 
     <Window.Resources>
         <converters:StringEmptyToVisibilityConverter x:Key="StringEmptyToVisibilityConverter" />
+
+        <!-- Windows 11 caption button metrics: 46x48 against a tall (48px) title bar. The
+             glyphs are Segoe Fluent Icons code points, with the Windows 10 icon font named
+             as a fallback. -->
+        <Style x:Key="CaptionButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="46" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Close keeps the system's red hover fill; it is a fixed colour in both themes, so
+             it is not a theme resource. -->
+        <Style x:Key="CloseCaptionButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#C42B1C" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#B22A1B" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Window.InputBindings>
@@ -23,26 +96,75 @@
         <KeyBinding Modifiers="Ctrl+Shift" Key="S" Command="{Binding SaveAsCommand}" />
     </Window.InputBindings>
 
-    <DockPanel LastChildFill="True">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <!-- ==================== MENU ==================== -->
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_New" Command="{Binding NewDocumentCommand}" InputGestureText="Ctrl+N" />
-                <MenuItem Header="_Open..." Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
-                <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
-                <MenuItem Header="Save _As..." Command="{Binding SaveAsCommand}" InputGestureText="Ctrl+Shift+S" />
-                <Separator />
-                <MenuItem Header="E_xit" Click="ExitMenuItem_Click" InputGestureText="Alt+F4" />
-            </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="About Accessibility Mapper" Click="AboutMenuItem_Click" />
-            </MenuItem>
-        </Menu>
+        <!-- ==================== TITLE BAR ==================== -->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-        <!-- ==================== TOP TOOLBAR (CONVERSION-SPEC.md §5.7) ==================== -->
-        <Border DockPanel.Dock="Top" Padding="14,9" BorderThickness="0,0,0,1"
-                Background="{DynamicResource ApplicationBackgroundBrush}"
+            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
+                <!-- Clicking the window icon opens the system menu, as it does on a standard
+                     frame. Alt+Space and right-clicking the drag region reach the same menu
+                     through WindowChrome, but the icon is client area, so it needs wiring. -->
+                <Image Source="pack://application:,,,/Assets/Icons/app.ico" Width="16" Height="16"
+                       Margin="0,0,10,0" RenderOptions.BitmapScalingMode="HighQuality"
+                       WindowChrome.IsHitTestVisibleInChrome="True"
+                       MouseLeftButtonUp="AppIcon_MouseLeftButtonUp" />
+                <TextBlock Text="{Binding Title}" FontSize="12" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" MaxWidth="360"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+
+                <!-- The menu lives in the extended title bar, as it does in the Windows 11
+                     shell. IsHitTestVisibleInChrome carves it out of the drag region. -->
+                <Menu Margin="16,0,0,0" VerticalAlignment="Center" Background="Transparent"
+                      WindowChrome.IsHitTestVisibleInChrome="True">
+                    <MenuItem Header="_File">
+                        <MenuItem Header="_New" Command="{Binding NewDocumentCommand}" InputGestureText="Ctrl+N" />
+                        <MenuItem Header="_Open..." Command="{Binding OpenCommand}" InputGestureText="Ctrl+O" />
+                        <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGestureText="Ctrl+S" />
+                        <MenuItem Header="Save _As..." Command="{Binding SaveAsCommand}" InputGestureText="Ctrl+Shift+S" />
+                        <Separator />
+                        <MenuItem Header="E_xit" Click="ExitMenuItem_Click" InputGestureText="Alt+F4" />
+                    </MenuItem>
+                    <MenuItem Header="_Help">
+                        <MenuItem Header="About Accessibility Mapper" Click="AboutMenuItem_Click" />
+                    </MenuItem>
+                </Menu>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
+                <Button Style="{StaticResource CaptionButtonStyle}" Content="&#xE921;"
+                        ToolTip="Minimize" Click="MinimizeButton_Click" />
+                <Button Click="MaximizeRestoreButton_Click">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+                            <Setter Property="Content" Value="&#xE922;" />
+                            <Setter Property="ToolTip" Value="Maximize" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" Value="Maximized">
+                                    <Setter Property="Content" Value="&#xE923;" />
+                                    <Setter Property="ToolTip" Value="Restore" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button Style="{StaticResource CloseCaptionButtonStyle}" Content="&#xE8BB;"
+                        ToolTip="Close" Click="CloseButton_Click" />
+            </StackPanel>
+        </Grid>
+
+        <!-- ==================== COMMAND BAR (CONVERSION-SPEC.md §5.7) ==================== -->
+        <Border Grid.Row="1" Padding="14,4,14,10" BorderThickness="0,0,0,1"
                 BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
             <StackPanel Orientation="Horizontal">
 
@@ -76,20 +198,25 @@
         </Border>
 
         <!-- ==================== MAIN AREA ==================== -->
-        <Grid>
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="240" MinWidth="220" MaxWidth="300" />
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
+            <!-- The toolbox pane is left unpainted so the Mica material reads through it, the
+                 way a WinUI 3 navigation pane does. -->
             <views:ToolboxView Grid.Column="0" DataContext="{Binding}" />
 
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                           Background="Transparent" ResizeBehavior="PreviousAndNext" ShowsPreview="True" />
 
-            <views:MapControl Grid.Column="2" DataContext="{Binding}" />
+            <Border Grid.Column="2" Background="{DynamicResource ApplicationBackgroundBrush}"
+                    BorderThickness="1,1,0,0" BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}">
+                <views:MapControl DataContext="{Binding}" />
+            </Border>
         </Grid>
 
-    </DockPanel>
+    </Grid>
 </Window>
