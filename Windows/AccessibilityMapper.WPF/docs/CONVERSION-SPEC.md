@@ -558,7 +558,7 @@ Exact text content, top to bottom:
 9. "Commercial License" heading (medium weight), then body text (exact): *"A commercial
    license is available from Druware Software Designs for use in proprietary or
    closed-source products."* — followed by a hyperlink **"Learn about commercial
-   licensing"** → `https://druware.com/accessibilitymapper/licensing`.
+   licensing"** → `https://www.twowheeljunction.com/products/accessmapper`.
 
 All of section 7–9's caption-sized body text is centered, secondary color, horizontal
 padding 28.

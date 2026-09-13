@@ -60,7 +60,7 @@ APP_POS_X=165;  APP_POS_Y=166
 LINK_POS_X=495; LINK_POS_Y=166
 WEB_POS_X=330;  WEB_POS_Y=336
 WEBLOC_NAME="Visit the Website.webloc"
-WEBLOC_URL="https://www.twowheeljunction.com/products/accessibilitymapper"
+WEBLOC_URL="https://www.twowheeljunction.com/products/accessmapper"
 
 # Finder's AppleScript `bounds` for a container window is {l, t, r, b} of the
 # whole window, title bar included; the content area is what the background

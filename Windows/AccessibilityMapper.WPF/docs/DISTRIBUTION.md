@@ -106,7 +106,7 @@ into `Cert:\CurrentUser\My` and pass its thumbprint, or point the build at the `
 ```powershell
 pwsh -File build\Build-Packages.ps1 -Channel Direct `
     -CertificatePath C:\secure\codesign.pfx -CertificatePassword $env:CERT_PASSWORD `
-    -UpdateUrl https://druware.com/accessibilitymapper
+    -UpdateUrl https://www.twowheeljunction.com/products/accessmapper
 ```
 
 The script reads the certificate's subject and rewrites the package `Publisher` to match,
@@ -130,7 +130,7 @@ useful for smoke-testing an install.
 
 ```powershell
 pwsh -File build\Build-Packages.ps1 -Channel Direct `
-    -CertificateThumbprint <thumbprint> -UpdateUrl https://druware.com/accessibilitymapper
+    -CertificateThumbprint <thumbprint> -UpdateUrl https://www.twowheeljunction.com/products/accessmapper
 ```
 
 Upload everything in `build\out\` to that URL, keeping the filenames. Serve

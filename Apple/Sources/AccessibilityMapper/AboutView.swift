@@ -75,7 +75,18 @@ struct AboutView: View {
                     Text("A commercial license is available from Druware Software Designs for use in proprietary or closed-source products.")
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.secondary)
-                    Link("Learn about commercial licensing", destination: URL(string: "https://druware.com/accessibilitymapper/licensing")!)
+                    Link("Learn about commercial licensing", destination: URL(string: "https://www.twowheeljunction.com/products/accessmapper")!)
+                }
+
+                Divider()
+                    .padding(.horizontal, 40)
+
+                // ── Donation note ──────────────────────────────────────
+                VStack(spacing: 4) {
+                    Text("This project is Donation Supported. Please visit Two Wheel Junction to contribute to its development.")
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                    Link("https://www.twowheeljunction.com", destination: URL(string: "https://www.twowheeljunction.com")!)
                 }
             }
             .font(.caption)

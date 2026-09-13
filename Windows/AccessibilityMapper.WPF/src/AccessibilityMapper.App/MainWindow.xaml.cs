@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -76,6 +77,9 @@ public partial class MainWindow : Window
     private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
 
     private void ExitMenuItem_Click(object sender, RoutedEventArgs e) => Application.Current.Shutdown();
+
+    private void SupportDevelopmentMenuItem_Click(object sender, RoutedEventArgs e) =>
+        Process.Start(new ProcessStartInfo("https://www.twowheeljunction.com") { UseShellExecute = true });
 
     private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
     {

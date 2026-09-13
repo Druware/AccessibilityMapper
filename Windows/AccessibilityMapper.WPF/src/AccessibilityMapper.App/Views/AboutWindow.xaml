@@ -69,7 +69,14 @@
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Text="A commercial license is available from Druware Software Designs for use in proprietary or closed-source products." />
             <TextBlock HorizontalAlignment="Center" FontSize="11">
-                <Hyperlink NavigateUri="https://druware.com/accessibilitymapper/licensing" RequestNavigate="Hyperlink_RequestNavigate">Learn about commercial licensing</Hyperlink>
+                <Hyperlink NavigateUri="https://www.twowheeljunction.com/products/accessmapper" RequestNavigate="Hyperlink_RequestNavigate">Learn about commercial licensing</Hyperlink>
+            </TextBlock>
+
+            <Separator Margin="0,12,0,12" />
+
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" FontSize="11"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                This project is Donation Supported. Please visit Two Wheel Junction (<Hyperlink NavigateUri="https://www.twowheeljunction.com" RequestNavigate="Hyperlink_RequestNavigate">https://www.twowheeljunction.com</Hyperlink>) to contribute to its development.
             </TextBlock>
 
             <Separator Margin="0,12,0,4" />

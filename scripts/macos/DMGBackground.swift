@@ -148,7 +148,7 @@ func drawBackground() {
     NSBezierPath(rect: NSRect(x: 0, y: ruleY - 0.5, width: canvasWidth, height: 1)).fill()
 
     drawCentered(
-        "www.twowheeljunction.com/products/accessibilitymapper",
+        "www.twowheeljunction.com/products/accessmapper",
         font: .systemFont(ofSize: 11, weight: .medium),
         color: color(0x2B6CB0),
         centerX: canvasWidth / 2,

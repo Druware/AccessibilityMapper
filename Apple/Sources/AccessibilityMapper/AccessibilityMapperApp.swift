@@ -35,11 +35,17 @@ struct AccessibilityMapperApp: App {
 
 private struct AppCommands: Commands {
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.openURL) private var openURL
 
     var body: some Commands {
         CommandGroup(replacing: .appInfo) {
             Button("About Accessibility Mapper") {
                 openWindow(id: "about")
+            }
+        }
+        CommandGroup(replacing: .help) {
+            Button("Support Development…") {
+                openURL(URL(string: "https://www.twowheeljunction.com")!)
             }
         }
     }

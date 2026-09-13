@@ -58,7 +58,7 @@
 
 .EXAMPLE
     pwsh -File build/Build-Packages.ps1 -Channel Direct `
-        -CertificateThumbprint A1B2C3... -UpdateUrl https://druware.com/accessibilitymapper
+        -CertificateThumbprint A1B2C3... -UpdateUrl https://www.twowheeljunction.com/products/accessmapper
 #>
 [CmdletBinding()]
 param(
@@ -75,7 +75,7 @@ param(
     [string]$CertificatePassword,
     [string]$TimestampUrl = 'http://timestamp.digicert.com',
 
-    [string]$UpdateUrl = 'https://druware.com/accessibilitymapper',
+    [string]$UpdateUrl = 'https://www.twowheeljunction.com/products/accessmapper',
 
     [string]$IdentityName,
     [string]$Publisher,

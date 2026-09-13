@@ -32,12 +32,15 @@ This application is written and made available under the Gnu Public License.
 The source code is on Github @ https://github.com/Druware/AccessibilityMapper.
 
 For convenience, it is also available as a binary distribution from 
-https://www.druware.com, as well as on the appropriate App Stores. 
+https://www.twowheeljunction.com/products/accessmapper, as well as on the appropriate App Stores. 
 
 While this project is not 'for sale' in the traditional sense, it is free for 
-personal use, and cheap for commercial use. If you find it useful, please either
-buy it through the App Store, or send us a donation via the paypal link found 
-below.
+personal use, and cheap for commercial use. Commercial licensing information 
+and updates can be found at 
+https://www.twowheeljunction.com/products/accessmapper. This project is 
+Donation Supported, so if you find it useful, please either buy it through 
+the App Store, or visit Two Wheel Junction 
+( https://www.twowheeljunction.com ) to contribute to its development.
 
 ## Copyright
 
