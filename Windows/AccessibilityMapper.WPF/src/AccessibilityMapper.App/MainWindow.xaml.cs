@@ -31,6 +31,17 @@ public partial class MainWindow : Window
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(MainViewModel.InfoMessage))
+        {
+            var info = _viewModel.InfoMessage;
+            if (string.IsNullOrEmpty(info))
+                return;
+
+            MessageBox.Show(this, info, "Accessibility Mapper", MessageBoxButton.OK, MessageBoxImage.Information);
+            _viewModel.InfoMessage = null;
+            return;
+        }
+
         if (e.PropertyName != nameof(MainViewModel.ErrorMessage))
             return;
 

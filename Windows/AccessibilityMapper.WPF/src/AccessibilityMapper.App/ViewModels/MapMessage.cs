@@ -1,3 +1,5 @@
+using AccessibilityMapper.App.Models;
+
 namespace AccessibilityMapper.App.ViewModels;
 
 /// <summary>
@@ -23,10 +25,10 @@ public class MapMessage
     public bool? Tight { get; init; }
 }
 
-public record MarkerDto(Guid Id, double Lat, double Lon, string Label);
+public record MarkerDto(Guid Id, double Lat, double Lon, string Label, MarkerKind Kind);
 
 public record BoundaryDto(Guid Id, string Name, IReadOnlyList<IReadOnlyList<double[]>> Rings);
 
-public record ZonesDto(bool Walk, bool SafeRoutes, bool Bike, bool Lsv);
+public record ZonesDto(bool Walk, bool SafeRoutes, bool Bike, bool Lsv, bool Incidents);
 
 public record ViewDto(double[] Center, double[] Span, bool FitMarkers);

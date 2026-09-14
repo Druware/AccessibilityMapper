@@ -61,6 +61,16 @@ struct ToolboxView: View {
                 LegendRow(color: Color(red: 0.0, green: 0.62, blue: 0.72), label: "Safe Routes  —  1.0 mi", isEnabled: $viewModel.showSafeRoutes)
                 LegendRow(color: .orange, label: "Bike         —  2.0 mi", isEnabled: $viewModel.showBike)
                 LegendRow(color: .blue,   label: "LSV          —  3.0 mi", isEnabled: $viewModel.showLSV)
+                HStack(spacing: 8) {
+                    Toggle("", isOn: $viewModel.showIncidents)
+                        .toggleStyle(.checkbox)
+                        .labelsHidden()
+                    IncidentGlyph()
+                        .opacity(viewModel.showIncidents ? 1.0 : 0.3)
+                    Text("Show Incidents")
+                        .font(.caption)
+                        .foregroundColor(viewModel.showIncidents ? .primary : .secondary)
+                }
             }
             .padding(.horizontal, 12)
             .padding(.bottom, 10)
@@ -287,6 +297,29 @@ struct LegendRow: View {
     }
 }
 
+// Small point-up triangle (black fill, red stroke) matching the incident map glyph
+struct IncidentGlyph: View {
+    private struct Triangle: Shape {
+        func path(in rect: CGRect) -> Path {
+            var p = Path()
+            p.move(to: CGPoint(x: rect.midX, y: rect.minY))
+            p.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
+            p.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
+            p.closeSubpath()
+            return p
+        }
+    }
+
+    var body: some View {
+        ZStack {
+            Triangle().fill(Color.black)
+            Triangle().stroke(Color.red, style: StrokeStyle(lineWidth: 1.5, lineJoin: .round))
+        }
+        .frame(width: 12, height: 10.4)
+        .frame(width: 14)
+    }
+}
+
 struct MarkerRow: View {
     let marker: BullseyeMarker
     let isSelected: Bool
@@ -314,9 +347,13 @@ struct MarkerRow: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Image(systemName: "scope")
-                .foregroundColor(isSelected ? .accentColor : .red)
-                .frame(width: 14)
+            if marker.kind == .incident {
+                IncidentGlyph()
+            } else {
+                Image(systemName: "scope")
+                    .foregroundColor(isSelected ? .accentColor : .red)
+                    .frame(width: 14)
+            }
 
             VStack(alignment: .leading, spacing: 2) {
                 TextField("Name...", text: $label)

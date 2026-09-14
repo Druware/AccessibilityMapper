@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Web.WebView2.Core;
+using AccessibilityMapper.App.Models;
 using AccessibilityMapper.App.ViewModels;
 
 namespace AccessibilityMapper.App.Views;
@@ -152,7 +153,8 @@ public partial class MapControl : UserControl
                 walk = m.Zones?.Walk ?? true,
                 safeRoutes = m.Zones?.SafeRoutes ?? true,
                 bike = m.Zones?.Bike ?? true,
-                lsv = m.Zones?.Lsv ?? true
+                lsv = m.Zones?.Lsv ?? true,
+                incidents = m.Zones?.Incidents ?? true
             },
             "setMode" => new { type = "setMode", placing = m.Placing ?? false },
             "setBoundaries" => new
@@ -173,7 +175,8 @@ public partial class MapControl : UserControl
         id = m.Id.ToString(),
         lat = m.Lat,
         lon = m.Lon,
-        label = m.Label
+        label = m.Label,
+        kind = m.Kind == MarkerKind.Incident ? "incident" : "bullseye"
     };
 
     private static object ToBoundaryWire(BoundaryDto b) => new
@@ -188,7 +191,8 @@ public partial class MapControl : UserControl
         walk = z?.Walk ?? true,
         safeRoutes = z?.SafeRoutes ?? true,
         bike = z?.Bike ?? true,
-        lsv = z?.Lsv ?? true
+        lsv = z?.Lsv ?? true,
+        incidents = z?.Incidents ?? true
     };
 
     // ---- Inbound: JS -> VM -------------------------------------------------

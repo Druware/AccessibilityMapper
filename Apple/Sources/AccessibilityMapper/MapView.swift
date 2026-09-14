@@ -28,7 +28,10 @@ final class BullseyeAnnotation: NSObject, MKAnnotation {
     let marker: BullseyeMarker
 
     var coordinate: CLLocationCoordinate2D { marker.coordinate }
-    var title: String? { marker.label.isEmpty ? "Accessible Location" : marker.label }
+    var title: String? {
+        guard marker.label.isEmpty else { return marker.label }
+        return marker.kind == .incident ? "Incident" : "Accessible Location"
+    }
     var subtitle: String? { String(format: "%.5f,  %.5f", marker.latitude, marker.longitude) }
 
     init(marker: BullseyeMarker) {
@@ -67,7 +70,7 @@ struct MapView: NSViewRepresentable {
 
         // Populate markers immediately so they're visible on first render / document load
         if !document.markers.isEmpty {
-            map.addAnnotations(document.markers.map { BullseyeAnnotation(marker: $0) })
+            map.addAnnotations(visibleMarkers.map { BullseyeAnnotation(marker: $0) })
             rebuildOverlays(map)
             context.coordinator.lastMarkerIDs   = document.markers.map(\.id)
             context.coordinator.lastMarkerKeys  = document.markers.map { "\($0.id):\($0.label)" }
@@ -75,6 +78,7 @@ struct MapView: NSViewRepresentable {
                 viewModel.showWalk, viewModel.showSafeRoutes,
                 viewModel.showBike, viewModel.showLSV
             )
+            context.coordinator.lastShowIncidents = viewModel.showIncidents
         }
 
         return map
@@ -107,26 +111,28 @@ struct MapView: NSViewRepresentable {
                 guard let av = map.view(for: ann) else { continue }
                 let sel = ann.marker.id == next
                 let currentLabel = markerByID[ann.marker.id]?.label ?? ann.marker.label
-                let (icon, offsetY) = Coordinator.bullseyeIcon(selected: sel, label: currentLabel)
+                let (icon, offsetY) = Coordinator.markerIcon(kind: ann.marker.kind, selected: sel, label: currentLabel)
                 av.image = icon
                 av.centerOffset = CGPoint(x: 0, y: offsetY)
             }
             rebuildOverlays(map)
         }
 
-        // Overlays & annotations (rebuild when markers list or labels or ring toggles change)
+        // Overlays & annotations (rebuild when markers list or labels or ring/incident toggles change)
         let ids    = document.markers.map(\.id)
         let keys   = document.markers.map { "\($0.id):\($0.label)" }
         let toggles = (viewModel.showWalk, viewModel.showSafeRoutes, viewModel.showBike, viewModel.showLSV)
         let markerListChanged   = ids  != coord.lastMarkerIDs
         let markerLabelsChanged = keys != coord.lastMarkerKeys
         let togglesChanged      = toggles != coord.lastRingToggles
-        if markerListChanged || markerLabelsChanged || togglesChanged {
-            coord.lastMarkerIDs    = ids
-            coord.lastMarkerKeys   = keys
-            coord.lastRingToggles  = toggles
+        let incidentsToggled    = viewModel.showIncidents != coord.lastShowIncidents
+        if markerListChanged || markerLabelsChanged || togglesChanged || incidentsToggled {
+            coord.lastMarkerIDs     = ids
+            coord.lastMarkerKeys    = keys
+            coord.lastRingToggles   = toggles
+            coord.lastShowIncidents = viewModel.showIncidents
             rebuildOverlays(map)
-            if markerListChanged {
+            if markerListChanged || incidentsToggled {
                 rebuildAnnotations(map)
             } else if markerLabelsChanged {
                 // Label-only change: refresh images without adding/removing annotations
@@ -135,7 +141,7 @@ struct MapView: NSViewRepresentable {
                     guard let av = map.view(for: ann) else { continue }
                     let sel = ann.marker.id == viewModel.selectedMarkerID
                     let label = markerByID[ann.marker.id]?.label ?? ""
-                    let (icon, offsetY) = Coordinator.bullseyeIcon(selected: sel, label: label)
+                    let (icon, offsetY) = Coordinator.markerIcon(kind: ann.marker.kind, selected: sel, label: label)
                     av.image = icon
                     av.centerOffset = CGPoint(x: 0, y: offsetY)
                 }
@@ -162,10 +168,16 @@ struct MapView: NSViewRepresentable {
         }
     }
 
+    // Markers shown on the map: incidents are hidden when the Show Incidents toggle is off
+    private var visibleMarkers: [BullseyeMarker] {
+        document.markers.filter { $0.kind != .incident || viewModel.showIncidents }
+    }
+
+    // Distance rings are drawn for bullseye markers only
     private func rebuildOverlays(_ map: MKMapView) {
         let selectedID = viewModel.selectedMarkerID
         map.removeOverlays(map.overlays.filter { $0 is MKCircle })
-        for m in document.markers {
+        for m in document.markers where m.kind == .bullseye {
             let s = m.id == selectedID ? "-sel" : ""
             var overlays: [MKOverlay] = []
             if viewModel.showLSV        { let o = MKCircle(center: m.coordinate, radius: BullseyeMarker.Radii.outer);       o.title = "outer\(s)";       overlays.append(o) }
@@ -179,10 +191,11 @@ struct MapView: NSViewRepresentable {
     private func rebuildAnnotations(_ map: MKMapView) {
         let existing = map.annotations.compactMap { $0 as? BullseyeAnnotation }
         let existingIDs = Set(existing.map(\.marker.id))
-        let wantedIDs   = Set(document.markers.map(\.id))
+        let visible     = visibleMarkers
+        let wantedIDs   = Set(visible.map(\.id))
 
         map.removeAnnotations(existing.filter { !wantedIDs.contains($0.marker.id) })
-        let toAdd = document.markers.filter { !existingIDs.contains($0.id) }
+        let toAdd = visible.filter { !existingIDs.contains($0.id) }
         map.addAnnotations(toAdd.map { BullseyeAnnotation(marker: $0) })
     }
 
@@ -197,6 +210,7 @@ struct MapView: NSViewRepresentable {
         var lastMarkerIDs: [UUID] = []
         var lastMarkerKeys: [String] = []   // "\(id):\(label)" — detects label edits
         var lastRingToggles: (Bool, Bool, Bool, Bool) = (true, true, true, true)
+        var lastShowIncidents: Bool = true
         var lastSelectedID: UUID? = nil
         var lastBoundaryIDs: [UUID] = []
         weak var tapGesture: NSClickGestureRecognizer?
@@ -279,7 +293,7 @@ struct MapView: NSViewRepresentable {
             view.canShowCallout = true
 
             let sel = ann.marker.id == viewModel.selectedMarkerID
-            let (icon, offsetY) = Self.bullseyeIcon(selected: sel, label: ann.marker.label)
+            let (icon, offsetY) = Self.markerIcon(kind: ann.marker.kind, selected: sel, label: ann.marker.label)
             view.image = icon
             view.centerOffset = CGPoint(x: 0, y: offsetY)
 
@@ -349,9 +363,10 @@ struct MapView: NSViewRepresentable {
 
         // MARK: Icon
 
-        // Returns the composite icon image (bullseye + optional label pill below)
-        // and the centerOffset.y that pins the icon's bottom to the map coordinate.
-        static func bullseyeIcon(selected: Bool, label: String = "") -> (image: NSImage, offsetY: CGFloat) {
+        // Returns the composite icon image (bullseye or incident glyph + optional label pill below)
+        // and the centerOffset.y: a bullseye's bottom is pinned to the map coordinate,
+        // an incident triangle is centered on it.
+        static func markerIcon(kind: MarkerKind, selected: Bool, label: String = "") -> (image: NSImage, offsetY: CGFloat) {
             let dim: CGFloat    = selected ? 36   : 14
             let lineW: CGFloat  = selected ? 3.0  : 1.0
             let dotR: CGFloat   = selected ? 5.0  : 1.5
@@ -378,33 +393,52 @@ struct MapView: NSViewRepresentable {
             //   center is at totalH/2 above image bottom; icon bottom is at labelExtra above image bottom.
             //   distance from center to icon bottom = totalH/2 - labelExtra = (dim - labelExtra)/2
             //   we want icon bottom at coordinate → center must be (dim - labelExtra)/2 above coordinate
-            let offsetY = -(dim - labelExtra) / 2
+            //   an incident's center is labelExtra/2 above the image center, so shift the image down by that.
+            let offsetY = kind == .incident ? labelExtra / 2 : -(dim - labelExtra) / 2
 
             let image = NSImage(size: NSSize(width: totalW, height: totalH), flipped: false) { _ in
-                // ── Bullseye icon (upper region of canvas) ──────────────
+                // ── Bullseye / incident icon (upper region of canvas) ───
                 NSGraphicsContext.current?.saveGraphicsState()
                 let t = NSAffineTransform()
                 t.translateX(by: (totalW - dim) / 2, yBy: labelExtra)
                 t.concat()
 
                 let cx = dim / 2, cy = dim / 2
-                color.set()
 
-                let ring = NSBezierPath(ovalIn: NSRect(x: lineW/2 + 0.5, y: lineW/2 + 0.5,
-                                                        width: dim - lineW - 1, height: dim - lineW - 1))
-                ring.lineWidth = lineW
-                ring.stroke()
+                if kind == .incident {
+                    // Equilateral triangle, point up, black fill with a red stroke, centered in the icon square
+                    let side = dim - lineW - 1
+                    let height = side * sqrt(3) / 2
+                    let triangle = NSBezierPath()
+                    triangle.move(to: NSPoint(x: cx - side / 2, y: cy - height / 2))
+                    triangle.line(to: NSPoint(x: cx + side / 2, y: cy - height / 2))
+                    triangle.line(to: NSPoint(x: cx,            y: cy + height / 2))
+                    triangle.close()
+                    triangle.lineWidth = lineW
+                    triangle.lineJoinStyle = .round
+                    NSColor.black.setFill()
+                    triangle.fill()
+                    NSColor.systemRed.setStroke()
+                    triangle.stroke()
+                } else {
+                    color.set()
 
-                NSBezierPath(ovalIn: NSRect(x: cx - dotR, y: cy - dotR,
-                                            width: dotR * 2, height: dotR * 2)).fill()
+                    let ring = NSBezierPath(ovalIn: NSRect(x: lineW/2 + 0.5, y: lineW/2 + 0.5,
+                                                            width: dim - lineW - 1, height: dim - lineW - 1))
+                    ring.lineWidth = lineW
+                    ring.stroke()
 
-                let lines = NSBezierPath()
-                lines.move(to: NSPoint(x: margin,     y: cy)); lines.line(to: NSPoint(x: cx - gap,       y: cy))
-                lines.move(to: NSPoint(x: cx + gap,   y: cy)); lines.line(to: NSPoint(x: dim - margin,   y: cy))
-                lines.move(to: NSPoint(x: cx, y: margin));     lines.line(to: NSPoint(x: cx,             y: cy - gap))
-                lines.move(to: NSPoint(x: cx, y: cy + gap));   lines.line(to: NSPoint(x: cx,             y: dim - margin))
-                lines.lineWidth = selected ? 2.5 : 0.75
-                lines.stroke()
+                    NSBezierPath(ovalIn: NSRect(x: cx - dotR, y: cy - dotR,
+                                                width: dotR * 2, height: dotR * 2)).fill()
+
+                    let lines = NSBezierPath()
+                    lines.move(to: NSPoint(x: margin,     y: cy)); lines.line(to: NSPoint(x: cx - gap,       y: cy))
+                    lines.move(to: NSPoint(x: cx + gap,   y: cy)); lines.line(to: NSPoint(x: dim - margin,   y: cy))
+                    lines.move(to: NSPoint(x: cx, y: margin));     lines.line(to: NSPoint(x: cx,             y: cy - gap))
+                    lines.move(to: NSPoint(x: cx, y: cy + gap));   lines.line(to: NSPoint(x: cx,             y: dim - margin))
+                    lines.lineWidth = selected ? 2.5 : 0.75
+                    lines.stroke()
+                }
 
                 NSGraphicsContext.current?.restoreGraphicsState()
 

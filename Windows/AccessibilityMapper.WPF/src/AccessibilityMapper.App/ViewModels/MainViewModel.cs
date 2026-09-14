@@ -58,7 +58,13 @@ public partial class MainViewModel : ObservableObject
     private bool showLsv = true;
 
     [ObservableProperty]
+    private bool showIncidents = true;
+
+    [ObservableProperty]
     private string? errorMessage;
+
+    [ObservableProperty]
+    private string? infoMessage;
 
     [ObservableProperty]
     private bool isFetchingBoundary;
@@ -123,7 +129,7 @@ public partial class MainViewModel : ObservableObject
             Type = "init",
             Markers = Markers.Select(ToMarkerDto).ToList(),
             SelectedId = SelectedMarkerId,
-            Zones = new ZonesDto(ShowWalk, ShowSafeRoutes, ShowBike, ShowLsv),
+            Zones = new ZonesDto(ShowWalk, ShowSafeRoutes, ShowBike, ShowLsv, ShowIncidents),
             Boundaries = Boundaries.Select(ToBoundaryDto).ToList(),
             MapType = MapTypeRaw,
             View = BuildViewDto()
@@ -167,6 +173,51 @@ public partial class MainViewModel : ObservableObject
         {
             ErrorMessage = $"Could not open \"{dialog.FileName}\": {ex.Message}";
         }
+    }
+
+    [RelayCommand]
+    private void Import()
+    {
+        var dialog = new OpenFileDialog { Filter = DocumentService.DialogFilter };
+        if (dialog.ShowDialog() != true)
+            return;
+
+        MapDocument imported;
+        try
+        {
+            imported = _documentService.Load(dialog.FileName);
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Could not import \"{dialog.FileName}\": {ex.Message}";
+            return;
+        }
+
+        int markerCount = Document.Markers.Count, boundaryCount = Document.Boundaries.Count;
+        var (markersAdded, boundariesAdded, skipped) = Document.Merge(imported);
+
+        foreach (var marker in Document.Markers.Skip(markerCount))
+            Markers.Add(marker);
+        foreach (var boundary in Document.Boundaries.Skip(boundaryCount))
+            Boundaries.Add(boundary);
+
+        if (markersAdded > 0)
+            PushMarkers();
+        if (boundariesAdded > 0)
+        {
+            MapMessageOut?.Invoke(new MapMessage
+            {
+                Type = "setBoundaries",
+                Boundaries = Boundaries.Select(ToBoundaryDto).ToList()
+            });
+        }
+        if (markersAdded + boundariesAdded > 0)
+            IsDirty = true;
+
+        static string Count(int n, string noun) => $"{n} {noun}{(n == 1 ? "" : "s")}";
+        InfoMessage = $"Imported {Count(markersAdded, "marker")} and " +
+                      $"{(boundariesAdded == 1 ? "1 boundary" : $"{boundariesAdded} boundaries")}" +
+                      (skipped > 0 ? $"; {Count(skipped, "duplicate")} skipped." : ".");
     }
 
     [RelayCommand]
@@ -419,6 +470,7 @@ public partial class MainViewModel : ObservableObject
     partial void OnShowSafeRoutesChanged(bool value) => PushZones();
     partial void OnShowBikeChanged(bool value) => PushZones();
     partial void OnShowLsvChanged(bool value) => PushZones();
+    partial void OnShowIncidentsChanged(bool value) => PushZones();
 
     private void PushZones()
     {
@@ -426,7 +478,7 @@ public partial class MainViewModel : ObservableObject
         MapMessageOut?.Invoke(new MapMessage
         {
             Type = "setZones",
-            Zones = new ZonesDto(ShowWalk, ShowSafeRoutes, ShowBike, ShowLsv)
+            Zones = new ZonesDto(ShowWalk, ShowSafeRoutes, ShowBike, ShowLsv, ShowIncidents)
         });
     }
 
@@ -447,7 +499,7 @@ public partial class MainViewModel : ObservableObject
 
     // ---- DTO mapping --------------------------------------------------------
 
-    private static MarkerDto ToMarkerDto(BullseyeMarker m) => new(m.Id, m.Latitude, m.Longitude, m.Label);
+    private static MarkerDto ToMarkerDto(BullseyeMarker m) => new(m.Id, m.Latitude, m.Longitude, m.Label, m.Kind);
 
     private static BoundaryDto ToBoundaryDto(BoundaryRecord b) => new(b.Id, b.Name, b.PolygonRings);
 }

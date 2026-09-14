@@ -33,15 +33,35 @@ struct AccessibilityMapperApp: App {
     }
 }
 
+// Published by the frontmost ContentView so the File menu can act on that document.
+struct ImportMapActionKey: FocusedValueKey {
+    typealias Value = () -> Void
+}
+
+extension FocusedValues {
+    var importMapAction: (() -> Void)? {
+        get { self[ImportMapActionKey.self] }
+        set { self[ImportMapActionKey.self] = newValue }
+    }
+}
+
 private struct AppCommands: Commands {
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openURL) private var openURL
+    @FocusedValue(\.importMapAction) private var importMapAction
 
     var body: some Commands {
         CommandGroup(replacing: .appInfo) {
             Button("About Accessibility Mapper") {
                 openWindow(id: "about")
             }
+        }
+        CommandGroup(after: .importExport) {
+            Button("Import Map…") {
+                importMapAction?()
+            }
+            .keyboardShortcut("i", modifiers: [.command, .shift])
+            .disabled(importMapAction == nil)
         }
         CommandGroup(replacing: .help) {
             Button("Support Development…") {

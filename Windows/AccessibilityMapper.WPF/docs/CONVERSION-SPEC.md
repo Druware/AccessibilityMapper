@@ -27,6 +27,7 @@ JSON properties + defaults, or a custom converter that fills in the same default
 
 | Swift property | JSON key | Type | Default | Notes |
 |---|---|---|---|---|
+| `formatVersion` | `formatVersion` | int | `2` (current) | Always written as the current version (**2**) on save; a file without the key is version 1. Every version opens with no refusal or warning — the value **read** is ignored. See §1.2a. |
 | `zipCode` | `zipCode` | string | `""` | Last-searched ZIP/address; shown in window title |
 | `centerLatitude` | `centerLatitude` | double | `37.3318` | Persisted map center (updated on every pan/zoom end) |
 | `centerLongitude` | `centerLongitude` | double | `-122.0312` | |
@@ -44,18 +45,26 @@ centerLongitude), span: (spanLatDelta, spanLonDelta))` — this is the region us
 when there are no markers.
 
 `fitRegion` (computed, not serialized) — used on open **when there are markers**, so all
-markers plus their outer ring are visible with a 15% margin:
+markers are visible with a 15% margin. Only bullseye markers (§1.2a) are padded by the
+outer-ring radius; incident markers contribute only their raw coordinate:
 ```
-minLat/maxLat/minLon/maxLon = bounds of all marker lat/lon
-centerLat = (minLat+maxLat)/2 ; centerLon = (minLon+maxLon)/2
+midLat = (min(marker.latitude) + max(marker.latitude)) / 2   // over ALL markers, unpadded
 metersPerDegreeLat = 111320.0
-metersPerDegreeLon = 111320.0 * cos(centerLat * π / 180)
-latPad = outerRadiusMeters(4828.032) / metersPerDegreeLat
-lonPad = outerRadiusMeters(4828.032) / metersPerDegreeLon
-spanLat = ((maxLat - minLat) + 2*latPad) * 1.15
-spanLon = ((maxLon - minLon) + 2*lonPad) * 1.15
+metersPerDegreeLon = 111320.0 * cos(midLat * π / 180)
+latPad = outerRadiusMeters(4828.032) / metersPerDegreeLat    // 0 for an incident marker
+lonPad = outerRadiusMeters(4828.032) / metersPerDegreeLon    // 0 for an incident marker
+
+// per marker m: pad = (latPad, lonPad) if m.kind == .bullseye else (0, 0)
+minLat/maxLat/minLon/maxLon = bounds of (m.latitude ± latPad, m.longitude ± lonPad) over all markers
+centerLat = (minLat+maxLat)/2 ; centerLon = (minLon+maxLon)/2
+
+spanLat = max((maxLat - minLat) * 1.15, 0.02)   // 0.02° floor
+spanLon = max((maxLon - minLon) * 1.15, 0.02)   // 0.02° floor
 ```
-Returns `nil` (use plain `region` instead) when `markers` is empty.
+The 0.02° minimum span keeps a document made up entirely of unpadded incidents (or a
+single incident) from fitting to a degenerate, unusably tight zoom. Returns `nil` (use
+plain `region` instead) when `markers` is empty. See `Models.swift` (`fitRegion`) and
+`Windows/.../Models/MapDocument.cs` (`FitRegion()`), which implement this identically.
 
 ### 1.2 `BullseyeMarker`
 
@@ -65,6 +74,16 @@ Returns `nil` (use plain `region` instead) when `markers` is empty.
 | `latitude` | `latitude` | double | required |
 | `longitude` | `longitude` | double | required |
 | `label` | `label` | string | `""` |
+| `kind` | `kind` | string enum | `"bullseye"` — see §1.2a |
+
+`id`, `latitude` and `longitude` are required **on macOS**: `BullseyeMarker`'s custom
+decoder (`Models.swift`) uses plain `decode`, not `decodeIfPresent`, for those three, so a
+marker object missing one fails the whole file's load. `label` and `kind` are optional
+(`decodeIfPresent` with a fallback). **The Windows deserializer does not enforce this** —
+`BullseyeMarker.cs` has plain auto-properties with no `[JsonRequired]`/`required` modifier,
+so `System.Text.Json` silently defaults a missing `id`/`latitude`/`longitude` (a freshly
+generated GUID, `0.0`) instead of refusing to load. Always write all three regardless —
+loading with defaulted zeros/IDs is never what you want even where it's tolerated.
 
 `coordinate` is a computed convenience `(latitude, longitude)` — not serialized.
 Equality (`==`) is by `id` only.
@@ -76,6 +95,29 @@ safeRoutes = 1_609.344   // 1.0 mi
 middle     = 3_218.688   // 2.0 mi
 outer      = 4_828.032   // 3.0 mi
 ```
+
+### 1.2a `MarkerKind` enum
+
+```swift
+enum MarkerKind: String, Codable, CaseIterable { case bullseye, incident }
+```
+Raw values used in JSON: `"bullseye"` | `"incident"` (lowercase, exact). Both apps always
+write `kind` explicitly on save; a missing, unrecognized, or non-string value reads as
+`.bullseye`/`MarkerKind.Bullseye`. Bullseye markers draw the four distance rings (§2);
+incident markers do not (§3.4) and are excluded from the outer-ring padding in `fitRegion`
+(§1.1).
+
+Incident markers cannot be **placed** by hand in either app: the map's tap-to-place
+handler and the macOS AppleScript `add marker` command always construct a marker with the
+default `kind` (bullseye) — see `MapView.swift`'s `handleTap` and
+`MainViewModel.AddMarkerAt`. They only enter a document via opening a file, File ▸ Import
+Map (§9.4), or an external tool such as `scripts/fars/fars_to_accmap.py`.
+
+**Compatibility with older files/apps**: app versions ≤ 1.0.3 predate `kind` and
+`formatVersion`. They ignore both fields, draw every marker as a bullseye regardless of
+what `kind` says, and — because they round-trip through their own (older) `Codable`/
+`System.Text.Json` model, which doesn't know about either key — drop both fields if they
+re-save the file.
 
 ### 1.3 `BoundaryRecord`
 
@@ -162,6 +204,22 @@ With one boundary present:
 }
 ```
 
+### 1.7 `merge` / `Merge` — combining two documents (File ▸ Import Map, §9.4)
+
+`MapDocument.merge(_:)` (Swift) and `MapDocument.Merge(_:)` (C#) append another document's
+markers and boundaries onto the current one:
+
+- A **marker** is skipped when its `id` is already present in the target document (or was
+  just added earlier in the same merge).
+- A **boundary** is skipped when its `id` is already present, **or** when a boundary with
+  the same `(type, name)` pair is already present.
+- Existing items are kept first in the resulting list; imported items are appended in the
+  order they appear in the source file.
+- The target document's `zipCode`, viewport (`centerLatitude`/`centerLongitude`/
+  `spanLatDelta`/`spanLonDelta`) and `mapTypeRaw` are left untouched.
+- Returns the number of markers added, boundaries added, and items skipped as duplicates,
+  which both apps use to compose a one-line summary message.
+
 ---
 
 ## 2. The four "bullseye" zones
@@ -178,6 +236,9 @@ toggle in `MapViewModel` (`showWalk`, `showSafeRoutes`, `showBike`, `showLSV`, a
 | `outer` — LSV (Low Speed Vehicle) | `"LSV          —  3.0 mi"` | 3.0 | **4828.032** | `showLSV` | `systemBlue` α0.5 / α0.85 | `systemBlue` α0.14 / α0.26 | 1.0 / 1.5 |
 
 Notes:
+- Rings are drawn for **bullseye markers only** (§1.2a). Incident markers never draw any of
+  the four rings, regardless of these toggle states — see §3.4 and §5.3 (the separate
+  "Show Incidents" toggle controls incident visibility, not these rings).
 - The em-dash spacing in the legend strings above is literal (copy exactly, including the
   multiple spaces used for column alignment in a monospace-ish rendering).
 - "Selected" doubles stroke opacity boost, roughly doubles fill opacity, and increases
@@ -259,6 +320,37 @@ Clicking an existing marker's icon shows a callout with:
 WPF/Leaflet: reproduce via Leaflet popup bound to the marker with the same title/subtitle
 text and a Delete button whose click posts a `removeMarker` message back to C#.
 
+### 3.4 Incident markers (`kind == .incident`, §1.2a)
+
+An incident marker's on-map icon is a different glyph from the bullseye target icon of
+§3.1, and it draws **no distance rings** at all (§2):
+
+| Property | Value |
+|---|---|
+| Glyph shape | Equilateral triangle, point up |
+| Fill | Black, opaque |
+| Stroke | Red (`systemRed` / `#FF3B30`) |
+| Anchor | **Centered** on the marker's coordinate — unlike a bullseye, whose icon anchors at its **bottom** edge (§3.1) |
+| Unselected / selected sizing, stroke width | 14px → 36px, stroke 1.0 → 3.0px (same `dim`/`lineW` progression as §3.1's table) — **opacity does not change**; an incident glyph is always fully opaque, unlike a bullseye (§3.1), which dims when unselected |
+| Default title (empty `label`) | `"Incident"` (a bullseye's default title is `"Accessible Location"`) |
+| Sidebar list icon | A small triangle glyph (same black-fill/red-stroke styling), in place of the bullseye "scope" icon |
+
+Selecting, renaming, deleting, and centering-on-map all work identically to a bullseye
+marker (§4/§4.1) — only the glyph, the ring behavior, and the default title differ.
+Incidents cannot be created by clicking the map or via the AppleScript `add marker`
+command (§1.2a); they arrive only through file open, File ▸ Import Map (§9.4), or an
+external tool such as `scripts/fars/fars_to_accmap.py`.
+
+Implementation: `MapView.swift`'s `Coordinator.markerIcon(kind:selected:label:)` and
+`ToolboxView.swift`'s `IncidentGlyph`/`MarkerRow` on macOS; `Assets/Map/map.js`'s
+`buildMarkerElement`/`markerOffset` (rendered as an SVG triangle, `INCIDENT_POINTS`) and
+`Views/ToolboxView.xaml`'s `IncidentGlyph` `Path` (shown via a `DataTrigger` on `Kind`) on
+Windows. Both apps keep the glyph fully opaque regardless of selection: Windows's
+`buildMarkerElement` hardcodes `opacity:1` on the incident `<svg>` (the same function's
+bullseye `<div>` still uses the 0.22/1.0 selected/unselected `opacity` variable), and
+macOS's `markerIcon` fills/strokes the triangle with plain `NSColor.black`/
+`NSColor.systemRed` with no alpha component applied.
+
 ---
 
 ## 4. Interactions / modes
@@ -289,6 +381,9 @@ is no keyboard shortcut or map-based mode toggle in the source.
 - Deleting via the map callout's Delete button, or via the sidebar list's minus-circle
   button, both remove the marker from `document.markers` (and clear selection if it was
   selected).
+- **Create mode only ever creates bullseye markers** (`kind` defaults to `.bullseye`);
+  there is no way to place an incident marker (§3.4) by clicking the map. Incidents come
+  from opening a file, File ▸ Import Map (§9.4), or an external tool.
 
 ### 4.1 Marker list ↔ map selection sync
 - Sidebar `MarkerRow`: single tap (`onTapGesture(count: 1)`) → `onSelect` →
@@ -331,6 +426,14 @@ circle (14×14) in the zone color, and the label text from §2's table. Unchecke
 the swatch (fill α0.06, stroke α0.3 instead of full) and dims the label text to secondary
 color.
 
+Below the four ring rows, a fifth row — **"Show Incidents"** — is a checkbox bound to
+`viewModel.showIncidents` (Windows: `MainViewModel.ShowIncidents`), with a small triangle
+swatch (`IncidentGlyph`, §3.4) instead of a ring/fill circle. It defaults to **on** and,
+unlike the four ring toggles, is **not persisted** in the `.accmap` file — it lives only on
+the view model/`MainViewModel`, not on `MapDocument`, so it resets to on every time a
+document is opened. Unchecking it hides incident markers on the map only; they remain in
+the Markers list (§5.5) with their data untouched.
+
 ### 5.4 Section "BOUNDARIES" (header text: `"BOUNDARIES"`)
 - A segmented/dropdown type picker (`BoundaryType`: City / County/Parish / State), width
   108, no visible label (`.labelsHidden()`).
@@ -353,7 +456,8 @@ Header row includes a right-aligned pill badge showing the marker count
 
 - Empty state text (exact, multi-line): `"No markers yet.\nSelect Accessible Location, then\nclick anywhere on the map."` — caption font, secondary color.
 - Non-empty: a scrollable list of `MarkerRow`s (see §3/§4 for interaction), each row shows:
-  - `scope` icon (accent color if selected, else red)
+  - `scope` icon (accent color if selected, else red) for a bullseye marker, or the small
+    triangle glyph of §3.4 for an incident marker
   - An editable name `TextField` (placeholder `"Name..."`), live-bound to label
   - Coordinates as two monospaced 10pt fields: `"%.5f°"` lat, `"%.5f°"` lon (degree symbol
     suffix)
@@ -543,9 +647,18 @@ Fixed-size window, 380pt wide, centered content, non-resizable
 Exact text content, top to bottom:
 1. App icon image, 96×96.
 2. **"Accessibility Mapper"** — title2, bold.
-3. **"Version \(ver) (\(build))"** — e.g. "Version 1.0 (1)"; `ver` = `CFBundleShortVersionString`
-   (fallback `"1.0"`), `build` = `CFBundleVersion` (fallback `"1"`). Subheadline, secondary
-   color.
+3. **"Version \(ver) (\(build))"** — currently "Version 1.0.4 (46)"; `ver` =
+   `CFBundleShortVersionString` (fallback `"1.0"`), `build` = `CFBundleVersion` (fallback
+   `"1"`). Subheadline, secondary color.
+
+   **The Windows implementation now matches this exactly** (`Views/AboutWindow.xaml.cs`,
+   `BuildVersionText`/`FormatVersionText`): it reads the assembly's
+   `AssemblyInformationalVersionAttribute` (the csproj `<Version>`, with any `+<commit>`
+   suffix from the SDK stripped) as `ver`, and the `AssemblyFileVersionAttribute`'s
+   revision component (the csproj `<BuildNumber>`, baked into `<FileVersion>` as
+   `1.0.4.$(BuildNumber)`) as `build`, producing the identical string — see
+   `docs/DISTRIBUTION.md`'s Versioning section for how `<Version>`/`<BuildNumber>` are kept
+   in sync with the macOS project.
 4. Divider.
 5. **"Copyright © 2026 Druware Software Designs"** — footnote, medium weight.
 6. **"Dual Licensed — Open Source & Commercial"** — footnote, secondary color.
@@ -568,6 +681,26 @@ file headers and `AboutView.swift` say *"Copyright © 2026 Druware Software Desi
 `README.md`'s copyright line and `ScriptCommands.swift`'s header say *"Druware Software
 Development"*. Use **"Druware Software Designs"** for the About dialog (that's what
 `AboutView.swift` itself renders) — this is the user-facing string that must match exactly.
+
+### 9.4 File ▸ Import Map
+
+Both apps now offer a File-menu command that merges another `.accmap` file's markers and
+boundaries into the currently open document (§1.7), distinct from Open (which replaces the
+document outright):
+
+- **macOS**: menu item **"Import Map…"**, added via `CommandGroup(after: .importExport)` in
+  `AccessibilityMapperApp.swift`, shortcut **⇧⌘I**, disabled when no document window is
+  frontmost. Presents a `.fileImporter` restricted to the `.accmap` content type; on
+  success, decodes the chosen file and calls `MapDocument.merge(_:)` on a copy of the
+  current document, replacing it only if at least one marker or boundary was actually
+  added (`ContentView.swift`).
+- **Windows**: menu item **"Import Map..."**, shortcut **Ctrl+I** (both a `KeyBinding` and
+  the `InputGestureText` shown on the menu item), bound to `MainViewModel.ImportCommand`.
+  Opens the same `.accmap` open-file dialog as File ▸ Open, loads it via
+  `DocumentService.Load`, and calls `MapDocument.Merge(_:)` (`MainViewModel.cs`).
+- Both platforms show a one-line summary afterward — e.g. "Imported 3 markers and 1
+  boundary; 2 duplicates skipped." — as a modal alert (macOS) or message box (Windows).
+  See §1.7 for the exact merge/dedup rules.
 
 ---
 

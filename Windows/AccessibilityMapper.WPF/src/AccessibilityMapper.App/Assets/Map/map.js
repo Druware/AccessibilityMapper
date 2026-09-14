@@ -37,7 +37,7 @@ const BOUNDARY_SOURCE = 'boundaries';
 let map;
 let placing = false;
 let selectedId = null;
-let zoneVisibility = { walk: true, safeRoutes: true, bike: true, lsv: true };
+let zoneVisibility = { walk: true, safeRoutes: true, bike: true, lsv: true, incidents: true };
 let markersById = new Map();
 let boundariesData = [];
 let currentMapType = 0;
@@ -168,12 +168,22 @@ function setMapType(mapType) {
 
 // ---- Markers / bullseyes -------------------------------------------------
 
-function buildMarkerElement(label, selected) {
+// The host only ever sends "bullseye" or "incident"; anything else is treated as a bullseye.
+const isIncident = data => data.kind === 'incident';
+
+// Equilateral triangle, point up, in a 24x24 box with its centroid at (12, 12).
+const INCIDENT_POINTS = '12,1.608 21,17.196 3,17.196';
+
+function buildMarkerElement(label, selected, kind) {
   const dim = selected ? 36 : 14;
   const opacity = selected ? 1.0 : 0.22;
   const borderW = selected ? 3 : 1;
 
-  const glyph = `<div class="bullseye-glyph" style="width:${dim}px;height:${dim}px;opacity:${opacity};border-width:${borderW}px;"></div>`;
+  const glyph = kind === 'incident'
+    // Always fully opaque; selection shows through size and stroke. Stroke is in viewBox
+    // units, scaled so it renders at borderW pixels like the bullseye border.
+    ? `<svg class="incident-glyph" width="${dim}" height="${dim}" viewBox="0 0 24 24" style="opacity:1;"><polygon points="${INCIDENT_POINTS}" stroke-width="${(borderW * 24) / dim}" /></svg>`
+    : `<div class="bullseye-glyph" style="width:${dim}px;height:${dim}px;opacity:${opacity};border-width:${borderW}px;"></div>`;
   const pill = label ? `<div class="label-pill${selected ? ' selected' : ''}">${escapeHtml(label)}</div>` : '';
 
   const wrap = document.createElement('div');
@@ -182,15 +192,20 @@ function buildMarkerElement(label, selected) {
   return { element: wrap, dim };
 }
 
-function popupHtml(id, lat, lon, label) {
-  const title = label && label.length > 0 ? escapeHtml(label) : 'Accessible Location';
+// Bullseyes sit with the coordinate at the glyph's bottom edge; incidents are centered on it.
+const markerOffset = (data, dim) => [0, isIncident(data) ? -dim / 2 : -dim];
+
+function popupHtml(id, lat, lon, label, kind) {
+  const title = label && label.length > 0
+    ? escapeHtml(label)
+    : (kind === 'incident' ? 'Incident' : 'Accessible Location');
   const subtitle = `${lat.toFixed(5)},  ${lon.toFixed(5)}`;
   return `<div class="marker-popup"><div class="popup-title">${title}</div><div class="popup-subtitle">${subtitle}</div><button class="popup-delete" data-id="${id}">Delete</button></div>`;
 }
 
 function addMarkerVisual(data) {
   const selected = data.id === selectedId;
-  const { element, dim } = buildMarkerElement(data.label, selected);
+  const { element, dim } = buildMarkerElement(data.label, selected, data.kind);
 
   element.addEventListener('click', event => {
     // Markers are DOM siblings above the canvas, so this never reaches the map's own
@@ -200,7 +215,7 @@ function addMarkerVisual(data) {
   });
 
   const popup = new maplibregl.Popup({ offset: 14, closeButton: true })
-    .setHTML(popupHtml(data.id, data.lat, data.lon, data.label));
+    .setHTML(popupHtml(data.id, data.lat, data.lon, data.label, data.kind));
 
   popup.on('open', () => {
     const button = popup.getElement()?.querySelector('.popup-delete');
@@ -214,7 +229,7 @@ function addMarkerVisual(data) {
 
   // anchor/offset reproduce Leaflet's iconAnchor of [width/2, dim]: the coordinate sits at
   // the bottom edge of the bullseye, with the label pill hanging below it.
-  const marker = new maplibregl.Marker({ element, anchor: 'top', offset: [0, -dim] })
+  const marker = new maplibregl.Marker({ element, anchor: 'top', offset: markerOffset(data, dim) })
     .setLngLat([data.lon, data.lat])
     .setPopup(popup)
     .addTo(map);
@@ -232,7 +247,18 @@ function removeMarkerVisual(id) {
 function rebuildMarkers(markersData) {
   Array.from(markersById.keys()).forEach(removeMarkerVisual);
   (markersData || []).forEach(addMarkerVisual);
+  applyIncidentVisibility();
   pushZoneData();
+}
+
+// Incidents are DOM markers, not layers, so the toggle hides their elements directly.
+function applyIncidentVisibility() {
+  markersById.forEach(entry => {
+    if (!isIncident(entry.data)) return;
+    const hidden = !zoneVisibility.incidents;
+    entry.marker.getElement().style.display = hidden ? 'none' : '';
+    if (hidden) entry.popup.remove();
+  });
 }
 
 function pushZoneData() {
@@ -241,6 +267,8 @@ function pushZoneData() {
   ZONES.forEach(zone => {
     const features = [];
     markersById.forEach(entry => {
+      // Only bullseyes have rings.
+      if (isIncident(entry.data)) return;
       features.push({
         type: 'Feature',
         properties: { selected: entry.data.id === selectedId },
@@ -267,7 +295,7 @@ function applySelection() {
   // The glyph changes size with selection, so the element and its offset are rebuilt.
   markersById.forEach(entry => {
     const selected = entry.data.id === selectedId;
-    const { element, dim } = buildMarkerElement(entry.data.label, selected);
+    const { element, dim } = buildMarkerElement(entry.data.label, selected, entry.data.kind);
 
     element.addEventListener('click', event => {
       event.stopPropagation();
@@ -275,12 +303,13 @@ function applySelection() {
     });
 
     entry.marker.remove();
-    entry.marker = new maplibregl.Marker({ element, anchor: 'top', offset: [0, -dim] })
+    entry.marker = new maplibregl.Marker({ element, anchor: 'top', offset: markerOffset(entry.data, dim) })
       .setLngLat([entry.data.lon, entry.data.lat])
       .setPopup(entry.popup)
       .addTo(map);
   });
 
+  applyIncidentVisibility();
   pushZoneData();
 }
 
@@ -363,8 +392,9 @@ function onHostMessage(msg) {
       break;
 
     case 'setZones':
-      zoneVisibility = { walk: msg.walk, safeRoutes: msg.safeRoutes, bike: msg.bike, lsv: msg.lsv };
+      zoneVisibility = { walk: msg.walk, safeRoutes: msg.safeRoutes, bike: msg.bike, lsv: msg.lsv, incidents: msg.incidents };
       applyZoneVisibility();
+      applyIncidentVisibility();
       break;
 
     case 'setMode':

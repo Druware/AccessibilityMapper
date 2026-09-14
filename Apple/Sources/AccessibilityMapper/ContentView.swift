@@ -21,6 +21,8 @@ struct ContentView: View {
     @Binding var document: MapDocument
     @StateObject private var viewModel = MapViewModel()
     @FocusState private var zipFocused: Bool
+    @State private var isImportingMap = false
+    @State private var importSummary: String? = nil
 
     var body: some View {
         HSplitView {
@@ -50,6 +52,47 @@ struct ContentView: View {
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
+        .focusedSceneValue(\.importMapAction, { isImportingMap = true })
+        .fileImporter(isPresented: $isImportingMap, allowedContentTypes: [.accmap]) { result in
+            importMap(result)
+        }
+        .alert("Import Map", isPresented: Binding(
+            get: { importSummary != nil },
+            set: { if !$0 { importSummary = nil } }
+        )) {
+            Button("OK") { importSummary = nil }
+        } message: {
+            Text(importSummary ?? "")
+        }
+    }
+
+    // MARK: - Import
+
+    private func importMap(_ result: Result<URL, Error>) {
+        do {
+            let url = try result.get()
+            let accessing = url.startAccessingSecurityScopedResource()
+            defer { if accessing { url.stopAccessingSecurityScopedResource() } }
+
+            let data     = try Data(contentsOf: url)
+            let imported = try JSONDecoder().decode(MapDocument.self, from: data)
+
+            // Merge into a copy and assign once, so the document is marked edited in a single change
+            var merged = document
+            let counts = merged.merge(imported)
+            if counts.markersAdded + counts.boundariesAdded > 0 { document = merged }
+
+            importSummary = Self.importSummary(counts)
+        } catch {
+            viewModel.errorMessage = "Could not import map: \(error.localizedDescription)"
+        }
+    }
+
+    private static func importSummary(_ counts: (markersAdded: Int, boundariesAdded: Int, skipped: Int)) -> String {
+        func count(_ n: Int, _ one: String, _ many: String) -> String { "\(n) \(n == 1 ? one : many)" }
+        var text = "Imported \(count(counts.markersAdded, "marker", "markers")) and \(count(counts.boundariesAdded, "boundary", "boundaries"))"
+        if counts.skipped > 0 { text += "; \(count(counts.skipped, "duplicate", "duplicates")) skipped" }
+        return text + "."
     }
 
     // MARK: - AppleScript bridge

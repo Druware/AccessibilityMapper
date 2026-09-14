@@ -16,9 +16,11 @@
        because the Store requires the revision field of Major.Minor.Build.Revision
        to be 0. Bump <Version> and both channels follow. -->
   <PropertyGroup>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.4</Version>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <!-- Same value as the macOS CURRENT_PROJECT_VERSION; the pre-commit hook bumps both. -->
+    <BuildNumber>47</BuildNumber>
+    <FileVersion>1.0.4.$(BuildNumber)</FileVersion>
     <Product>Accessibility Mapper</Product>
     <AssemblyTitle>Accessibility Mapper</AssemblyTitle>
     <Company>Druware Software Designs</Company>

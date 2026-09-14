@@ -1,0 +1,20 @@
+﻿STATE,ST_CASE,VEH_NO,PER_NO,PER_TYP,PER_TYPNAME,INJ_SEV,INJ_SEVNAME,AGE,SEX
+4,40246,0,1,5,Pedestrian,4,Fatal Injury (K),31,1
+4,40246,1,1,1,Driver of a Motor Vehicle In-Transport,9,Unknown/Not Reported,998,8
+6,61620,0,1,7,Other Cyclist,4,Fatal Injury (K),52,1
+6,61620,1,1,1,Driver of a Motor Vehicle In-Transport,9,Unknown/Not Reported,999,9
+13,130007,0,1,5,Pedestrian,4,Fatal Injury (K),44,1
+13,130007,1,1,1,Driver of a Motor Vehicle In-Transport,1,Possible Injury (C),21,1
+13,130007,1,2,2,Passenger of a Motor Vehicle In-Transport,0,No Apparent Injury (O),23,1
+13,130027,0,1,5,Pedestrian,4,Fatal Injury (K),24,1
+13,130027,1,1,1,Driver of a Motor Vehicle In-Transport,9,Unknown/Not Reported,999,9
+13,130107,0,1,5,Pedestrian,4,Fatal Injury (K),32,2
+13,130107,1,1,1,Driver of a Motor Vehicle In-Transport,1,Possible Injury (C),31,2
+13,130238,0,1,5,Pedestrian,4,Fatal Injury (K),36,2
+13,130238,0,2,5,Pedestrian,4,Fatal Injury (K),41,2
+13,130238,1,1,1,Driver of a Motor Vehicle In-Transport,0,No Apparent Injury (O),22,1
+13,131350,0,1,6,Bicyclist,4,Fatal Injury (K),56,2
+13,131350,1,1,1,Driver of a Motor Vehicle In-Transport,0,No Apparent Injury (O),45,1
+13,131458,0,1,5,Pedestrian,4,Fatal Injury (K),26,1
+13,131458,0,2,5,Pedestrian,2,Suspected Minor Injury (B),26,2
+13,131458,1,1,1,Driver of a Motor Vehicle In-Transport,0,No Apparent Injury (O),27,1

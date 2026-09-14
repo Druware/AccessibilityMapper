@@ -42,17 +42,35 @@ build/
 
 ## Versioning
 
-`<Version>` in `src/AccessibilityMapper.App/AccessibilityMapper.App.csproj` is the single
-source of truth. `Build-Packages.ps1` reads it and appends `.0` to form the four-part MSIX
-version, because **the Store reserves the revision field and rejects a non-zero value**.
+Four values in `src/AccessibilityMapper.App/AccessibilityMapper.App.csproj` work together:
 
-To ship an update, bump `<Version>` (and `<AssemblyVersion>`/`<FileVersion>` to match) and
-rebuild. The Store also rejects any upload whose version is not higher than the last one
-accepted.
+| Property | Current value | Purpose |
+|---|---|---|
+| `<Version>` | `1.0.4` | Single source of truth for the shipped version. `Build-Packages.ps1` reads *only* this and appends `.0` to form the four-part MSIX package version (`1.0.4.0`), because **the Store reserves the revision field and rejects a non-zero value**. Also the assembly's informational version (with the SDK's `+<commit>` suffix stripped) shown in the About dialog. |
+| `<AssemblyVersion>` | `1.0.4.0` | .NET assembly identity; kept matching `<Version>` with a `0` revision by convention. Not read by the packaging script. |
+| `<BuildNumber>` | `46` | The revision component of `<FileVersion>` — the same number as the macOS Xcode project's `CURRENT_PROJECT_VERSION`. |
+| `<FileVersion>` | `1.0.4.$(BuildNumber)` (`1.0.4.46`) | Read by the About dialog for the "(build)" part of its version text. Not read by the packaging script. |
 
-> Known gap: the About dialog's version string is hardcoded to `Version 1.0 (1)` because
-> `docs/CONVERSION-SPEC.md` §9.3 pins that text verbatim. It will not track `<Version>`
-> until that text is allowed to change.
+**The Store only ever sees `<Version>`** — `<BuildNumber>`/`<FileVersion>` never reach the
+MSIX package version, so bumping the build number alone does not produce an uploadable
+package; `<Version>` itself has to increase.
+
+**`<BuildNumber>` is bumped automatically.** A **local, untracked** git pre-commit hook
+(`.git/hooks/pre-commit`) increments it on every commit, and bumps the macOS Xcode
+project's `CURRENT_PROJECT_VERSION` by the same amount in the same commit, so the two
+platforms' build numbers never drift apart. Because the hook lives outside the repository
+(git does not track `.git/hooks/`), it has to be installed by hand in every clone — a
+fresh clone that skips this either bumps both build numbers manually before each release
+commit or writes an equivalent hook of its own.
+
+To ship an update: bump `<Version>` (and `<AssemblyVersion>`, by convention, to match) and
+commit — the pre-commit hook takes care of `<BuildNumber>` for both platforms. The Store
+also rejects any upload whose version is not higher than the last one accepted.
+
+The About dialog's version text tracks all of this automatically
+(`Views/AboutWindow.xaml.cs`, `FormatVersionText`) — it currently reads assembly metadata
+and shows "Version 1.0.4 (46)", matching the macOS About screen exactly. No manual step is
+needed there when bumping the version.
 
 ---
 

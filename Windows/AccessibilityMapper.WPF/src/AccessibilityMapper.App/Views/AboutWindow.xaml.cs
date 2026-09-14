@@ -25,16 +25,28 @@ public partial class AboutWindow : Window
     }
 
     /// <summary>
-    /// Reads the shipped assembly version rather than carrying a literal, which drifts. The
-    /// revision field is dropped: it is always 0 here, and only the MSIX package needs it.
+    /// Reads the shipped assembly metadata rather than carrying a literal, which drifts.
+    /// Shows "Version 1.0.4 (46)" like the macOS About screen: the version is &lt;Version&gt;
+    /// (the informational version without the SDK's "+commit" suffix) and the build is the
+    /// FileVersion revision, which the csproj sets from &lt;BuildNumber&gt;.
     /// </summary>
     private static string BuildVersionText()
     {
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
+        var assembly = Assembly.GetExecutingAssembly();
+        return FormatVersionText(
+            assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion,
+            assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version);
+    }
 
-        return version is null
-            ? "Version 1.0"
-            : $"Version {version.Major}.{version.Minor}.{version.Build}";
+    internal static string FormatVersionText(string? informationalVersion, string? fileVersion)
+    {
+        var version = informationalVersion?.Split('+')[0];
+        if (string.IsNullOrEmpty(version))
+            return "Version 1.0";
+
+        return Version.TryParse(fileVersion, out var file) && file.Revision >= 0
+            ? $"Version {version} ({file.Revision})"
+            : $"Version {version}";
     }
 
     private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)

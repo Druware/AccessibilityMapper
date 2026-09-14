@@ -27,4 +27,8 @@ public class BullseyeMarker
 
     [JsonPropertyName("label")]
     public string Label { get; set; } = "";
+
+    /// <summary>Incidents draw a triangle glyph and no rings.</summary>
+    [JsonPropertyName("kind")]
+    public MarkerKind Kind { get; set; } = MarkerKind.Bullseye;
 }

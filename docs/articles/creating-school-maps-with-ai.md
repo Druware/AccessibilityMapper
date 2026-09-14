@@ -54,11 +54,21 @@ and one county boundary. Here's a trimmed excerpt of its actual shape:
 }
 ```
 
-Every marker needs an `id` (a UUID), `latitude`, `longitude`, and `label`. Every boundary
-needs an `id`, `name`, `type` (exactly `"city"`, `"county"`, or `"state"`, lowercase), and
+Every marker needs an `id` (a UUID), `latitude`, and `longitude`; `label` is optional in
+the current apps (a marker with no `label` just shows no name), but always include it
+anyway — AccessibilityMapper 1.0.3 and earlier fail to open the whole file if any marker
+is missing `label`. Every boundary needs an `id`,
+`name`, `type` (exactly `"city"`, `"county"`, or `"state"`, lowercase), and
 `polygonRings` — note the coordinate order inside a ring is `[longitude, latitude]`
 (GeoJSON order), which is backwards from the marker fields and the easiest thing to get
 wrong if you ever hand-edit the file.
+
+Two more fields exist as of the apps' 1.0.4 release, and neither is required: an optional
+per-marker `kind` (`"bullseye"`, the default — the accessible-location pin described
+above — or `"incident"`, a marker with no distance rings, used for imported crash data;
+see Step 5's closing note), and an optional top-level `formatVersion` integer (currently
+2, when present). The sample file below predates both and has neither field, which makes
+it a "version 1" document — both apps still open it exactly the same way.
 
 You will not need to memorize this schema. It's here so you understand what the AI agent
 is producing when we get to Step 5, and so you can sanity-check the result yourself.
@@ -183,7 +193,8 @@ Example prompt to an AI coding agent:
 I have a cleaned CSV of Fulton County, GA public schools with name, latitude, longitude
 columns (attached). The .accmap format is JSON with top-level keys zipCode,
 centerLatitude, centerLongitude, spanLatDelta, spanLonDelta, mapTypeRaw, markers, and
-boundaries. Each marker needs id (a UUID), latitude, longitude, and label. Use
+boundaries. Each marker needs id (a UUID), latitude, and longitude; always add a label too
+(the school name) — older versions of the app fail to open the file without one. Use
 Samples/Fulton County GA Schools.accmap in this repo as a reference for the exact format.
 
 Create a new .accmap file called "Fulton County Schools.accmap" with one marker per row
@@ -221,6 +232,9 @@ doc["markers"].append({
     "label": "Abbotts Hill Elementary School",
 })
 # ...repeat for every row in your cleaned CSV...
+
+# "formatVersion" and each marker's "kind" are both optional and left out above; that
+# produces a version-1 file of ordinary ("bullseye") markers, which every app version opens.
 
 with open(path, "w") as f:
     json.dump(doc, f, indent=2, sort_keys=True, separators=(',', ' : '))
@@ -327,6 +341,19 @@ no rate limit, U.S. and territories only). But the *document* the two apps read 
 field names, required keys, the lowercase `"city"/"county"/"state"` boundary type, the
 `[longitude, latitude]` ring order — is identical on both platforms. A `.accmap` file built
 by an agent following Option A opens the same way in either app.
+
+### Combining maps, and adding real fatality data
+
+If you built your school map and a separately-built boundary or marker set as two
+different files, you don't need to merge them by hand: File ▸ Import Map (macOS ⇧⌘I,
+Windows Ctrl+I) merges another `.accmap` file's markers and boundaries into the one
+that's open, skipping anything already present by id (or, for boundaries, a matching
+name and type). And if your advocacy case would benefit from showing where pedestrians
+and cyclists have actually been killed nearby,
+[`scripts/fars/fars_to_accmap.py`](mapping-traffic-fatalities-with-fars.md) in this
+repository adds NHTSA FARS fatality markers to a `.accmap` file straight from the
+command line; in Accessibility Mapper 1.0.4 and later those show as triangles with no
+distance rings, and can be hidden on demand with the toolbox's Show Incidents toggle.
 
 ## 6. Verifying the result
 

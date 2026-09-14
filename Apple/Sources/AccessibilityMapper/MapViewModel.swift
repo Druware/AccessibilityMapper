@@ -32,6 +32,7 @@ final class MapViewModel: ObservableObject {
     @Published var showSafeRoutes:  Bool = true
     @Published var showBike:        Bool = true
     @Published var showLSV:         Bool = true
+    @Published var showIncidents:   Bool = true
 
     // Changing navigationTrigger tells MapView to animate to navigationRegion
     @Published var navigationTrigger: UUID = UUID()
